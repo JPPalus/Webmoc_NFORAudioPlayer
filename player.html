@@ -1,0 +1,155 @@
+<!doctype html>
+<!--
+webmoc - A javascript small-form audio player, inspired by moc (music on console).
+Copyright (c) 2018-2019 - Dr_Windu
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html lang="">
+<head>
+<meta charset="utf-8">
+
+<title>Quack experimental music player</title>
+
+<style>
+html * {
+	color: #00c000;
+	background-color: #080008;
+	font-family: monospace;
+	font-size: x-large;
+}
+
+button, select {
+	background-color: #000800;
+	border-color: #004000;
+	border-style: solid;
+}
+
+button:disabled {
+	color: #808080;
+	border-color: #404040;
+}
+
+div { margin-bottom: 10px }
+ol * { font-size: medium }
+li a { text-decoration: none }
+li a:hover { color: #30ff30 }
+.playing { font-weight: bold }
+</style>
+
+<body>
+<noscript><p>Javascript disabled. (You may still check the <code>music/</code> folder directly.)</p></noscript>
+
+<div> Piste : <a id="nplay"></a><br> </div>
+
+<div>
+	<audio id="audio_player" controls> </audio> <br>
+	<button id="prev" onClick="prevTrack()">Previous</button>
+	<button id="next" onclick="nextTrack()">Next</button>
+	<input id="random" type="checkbox" onclick="updateHUD()">Random
+</div>
+
+Playlist :
+<select id="pls">
+</select>
+
+<ol id="playlist">
+</ol>
+
+<script>
+	// Let's make a high-level language they said. The right tool for the job they said.
+	function get(name) { return document.getElementById(name); }
+	function randInt(max) { return Math.floor(Math.random() * Math.floor(max)); }
+	function half(n) { return Math.floor(n/2); }
+
+	// Clamp id and play corresponding track.
+	function playTrack (id)
+	{
+		Array.from(document.getElementsByClassName("playing")).forEach(function (el) { el.className = ""; }); // OMG.
+		player.pos = Math.min(Math.max(id, 0), player.len-1);
+		player.src = get("track-" + player.pos).href;
+		player.play();
+		get("track-" + player.pos).className = "playing";
+		return false;
+	}
+
+	// Loads an m3u file from "./music/playlists/".
+	function loadPlaylist (name)
+	{
+		var req = new XMLHttpRequest();
+		req.open("GET", "./music/playlists/"+name, false);
+		req.send();
+	
+		var pl = req.responseText.split("\r\n").filter(l => l.length > 0);
+		var html_pl = get("playlist");
+		html_pl.innerHTML = "\n";
+		for (let i = 1 ; i < pl.length ; i += 2) {
+			html_pl.insertAdjacentHTML("beforeend", "\t<li><a id=\"track-"+half(i)+"\" class=\"track\" onclick=\"return playTrack("+half(i)+")\"></a></li>\n");
+			var tlink = get("track-"+half(i));
+			tlink.href = pl[i+1].replace("../", "./music/");
+			tlink.innerText = pl[i].substring(pl[i].indexOf(",")+1);
+		}
+		player.len = half(pl.length);
+		player.pos = -1;
+		updateHUD();
+	}
+
+	// Controls
+	function getRandom() { return get("random").checked; }
+	function nextTrack() { playTrack(getRandom() ? randInt(player.len) : player.pos+1); }
+	function prevTrack() { playTrack(player.pos-1); }
+
+	function updateHUD ()
+	{
+		get("nplay").innerHTML = "("+(player.pos+1)+") " + (get("nplay").href = player.src);
+		if (getRandom() && player.len != -1) {
+			get("prev").disabled = true;
+			get("next").disabled = false;
+		} else {
+			get("prev").disabled = (player.pos <= 0);
+			get("next").disabled = (player.pos >= player.len-1);
+		}
+	}
+
+	// Loads playlist-list into its selector (pls).
+	// FIXME: M3U filenames with quotes ; keyboard selection.
+	function loadPlaylistList ()
+	{
+		var req = new XMLHttpRequest();
+		req.open("GET", "./music/playlists/", false);
+		req.send();
+	
+		var pll = req.responseText.split("\"").filter(s => s.endsWith(".m3u"));
+		var pls = get("pls");
+		pls.innerHTML = "\n";
+		for (let i = 0 ; i < pll.length ; i++)
+			pls.insertAdjacentHTML("beforeend",
+			"\t<option onclick=\"loadPlaylist(&quot;"+pll[i]+"&quot;)\">"+pll[i].replace(".m3u", "")+"</option>\n");
+	}
+
+	// Sets up playlist, volume and autoplay/update callbacks.
+	function startPlayer()
+	{
+		player.pos = player.len = -1;
+		player.volume = 0.5;
+		player.addEventListener("ended", nextTrack);
+		player.addEventListener("play", updateHUD);
+		updateHUD();
+	}
+
+	// Start the player
+	var player = get("audio_player");
+	loadPlaylistList();
+	startPlayer();
+</script>

@@ -138,7 +138,7 @@ li a:hover { color: #30ff30 }
 	}
 
 	// Loads playlist-list into its selector (pls).
-	// FIXME: M3U filenames with quotes ; keyboard selection.
+	// FIXME: M3U filenames with quotes.
 	function loadPlaylistList ()
 	{
 		var req = new XMLHttpRequest();
@@ -150,7 +150,9 @@ li a:hover { color: #30ff30 }
 		pls.innerHTML = "\n";
 		for (let i = 0 ; i < pll.length ; i++)
 			pls.insertAdjacentHTML("beforeend",
-			"\t\t<option onclick=\"loadPlaylist(&quot;"+pll[i]+"&quot;)\">"+pll[i].replace(".m3u", "")+"</option>\n");
+			"\t\t<option>"+pll[i].replace(".m3u", "")+"</option>\n");
+		pls.onchange = function () { loadPlaylist(this.options[this.selectedIndex].value); };
+		pls.selectedIndex = -1;
 	}
 
 	// Sets up playlist, volume and autoplay/update callbacks.

@@ -23,6 +23,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <title>Quack experimental music player</title>
 
 <style>
+/* Functionality */
+html { height: 100% }
+body {
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+ol { overflow-y: auto }
+
+.playing { font-weight: bold }
+
+/* Aesthetics */
 html * {
 	color: #00c000;
 	background-color: #080008;
@@ -42,16 +55,16 @@ button:disabled {
 }
 
 div { margin-bottom: 10px }
+ol { margin-top: 0px }
 ol * { font-size: medium }
 li a { text-decoration: none }
 li a:hover { color: #30ff30 }
-.playing { font-weight: bold }
 </style>
 
 <body>
 <noscript><p>Javascript disabled. (You may still check the <code>music/</code> folder directly.)</p></noscript>
 
-<div> Piste : <a id="nplay"></a><br> </div>
+<div> Piste : <a id="nplay"></a> </div>
 
 <div>
 	<audio id="audio_player" controls> </audio> <br>
@@ -60,9 +73,11 @@ li a:hover { color: #30ff30 }
 	<input id="random" type="checkbox" onclick="updateHUD()">Random
 </div>
 
-Playlist :
-<select id="pls">
-</select>
+<div>
+	Playlist :
+	<select id="pls">
+	</select>
+</div>
 
 <ol id="playlist">
 </ol>
@@ -135,7 +150,7 @@ Playlist :
 		pls.innerHTML = "\n";
 		for (let i = 0 ; i < pll.length ; i++)
 			pls.insertAdjacentHTML("beforeend",
-			"\t<option onclick=\"loadPlaylist(&quot;"+pll[i]+"&quot;)\">"+pll[i].replace(".m3u", "")+"</option>\n");
+			"\t\t<option onclick=\"loadPlaylist(&quot;"+pll[i]+"&quot;)\">"+pll[i].replace(".m3u", "")+"</option>\n");
 	}
 
 	// Sets up playlist, volume and autoplay/update callbacks.

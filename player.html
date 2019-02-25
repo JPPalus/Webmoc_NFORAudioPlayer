@@ -31,7 +31,7 @@ body {
 	display: flex;
 	flex-direction: column;
 }
-ol { overflow-y: auto }
+ol { overflow-x: hidden; }
 
 .playing { font-weight: bold }
 
@@ -54,8 +54,7 @@ button:disabled {
 	border-color: #404040;
 }
 
-div { margin-bottom: 10px }
-ol { margin-top: 0px }
+br { margin-bottom: 10px }
 ol * { font-size: medium }
 li a { text-decoration: none }
 li a:hover { color: #30ff30 }
@@ -64,16 +63,15 @@ li a:hover { color: #30ff30 }
 <body>
 <noscript><p>Javascript disabled. (You may still check the <code>music/</code> folder directly.)</p></noscript>
 
-<div> Piste : <a id="nplay"></a> </div>
-
-<div>
-	<audio id="audio_player" controls> </audio> <br>
+<div id="controls">
+	<label id="id">Select playlist.</label><a id="track"></a>
+	<br>
+	<audio id="audio_player" controls> </audio>
+	<br>
 	<button id="prev" onClick="prevTrack()">Previous</button>
 	<button id="next" onclick="nextTrack()">Next</button>
 	<input id="random" type="checkbox" onclick="updateHUD()">Random
-</div>
-
-<div>
+	<br>
 	Playlist :
 	<select id="pls">
 	</select>
@@ -91,11 +89,11 @@ li a:hover { color: #30ff30 }
 	// Clamp id and play corresponding track.
 	function playTrack (id)
 	{
-		Array.from(document.getElementsByClassName("playing")).forEach(function (el) { el.className = ""; }); // OMG.
 		player.pos = Math.min(Math.max(id, 0), player.len-1);
-		player.src = get("track-" + player.pos).href;
+		var track = get("track-" + player.pos);
+		player.src = track.href;
 		player.play();
-		get("track-" + player.pos).className = "playing";
+		updateHUD(track);
 		return false;
 	}
 
@@ -117,7 +115,7 @@ li a:hover { color: #30ff30 }
 		}
 		player.len = half(pl.length);
 		player.pos = -1;
-		updateHUD();
+		updateHUD(null);
 	}
 
 	// Controls
@@ -125,9 +123,17 @@ li a:hover { color: #30ff30 }
 	function nextTrack() { playTrack(getRandom() ? randInt(player.len) : player.pos+1); }
 	function prevTrack() { playTrack(player.pos-1); }
 
-	function updateHUD ()
+	// Track id/name, highlight in playlist, and button status.
+	function updateHUD (track)
 	{
-		get("nplay").innerHTML = "("+(player.pos+1)+") " + (get("nplay").href = player.src);
+		if (track) {
+			get("id").innerHTML = "Playing : ("+(player.pos+1)+") ";
+			get("track").innerHTML = (get("track").href = player.src).split('/').pop();
+
+			Array.from(document.getElementsByClassName("playing")).forEach(function (el) { el.className = ""; }); // OMG.
+			track.className = "playing";
+		}
+
 		if (getRandom() && player.len != -1) {
 			get("prev").disabled = true;
 			get("next").disabled = false;
@@ -161,8 +167,7 @@ li a:hover { color: #30ff30 }
 		player.pos = player.len = -1;
 		player.volume = 0.5;
 		player.addEventListener("ended", nextTrack);
-		player.addEventListener("play", updateHUD);
-		updateHUD();
+		updateHUD(null);
 	}
 
 	// Start the player

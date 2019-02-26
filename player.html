@@ -35,6 +35,11 @@ ol { overflow-x: hidden; }
 
 .playing { font-weight: bold }
 
+#pic, #controls {
+	display: inline-block;
+	vertical-align: top;
+}
+
 /* Aesthetics */
 html * {
 	color: #00c000;
@@ -54,6 +59,7 @@ button:disabled {
 	border-color: #404040;
 }
 
+img { border: solid }
 br { margin-bottom: 10px }
 ol * { font-size: medium }
 li a { text-decoration: none }
@@ -63,6 +69,8 @@ li a:hover { color: #30ff30 }
 <body>
 <noscript><p>Javascript disabled. (You may still check the <code>music/</code> folder directly.)</p></noscript>
 
+<section>
+<img id="pic" src="" alt="Album art">
 <div id="controls">
 	<label id="id">Select playlist.</label><a id="track"></a>
 	<br>
@@ -76,6 +84,7 @@ li a:hover { color: #30ff30 }
 	<select id="pls">
 	</select>
 </div>
+</section>
 
 <ol id="playlist">
 </ol>
@@ -123,12 +132,13 @@ li a:hover { color: #30ff30 }
 	function nextTrack() { playTrack(getRandom() ? randInt(player.len) : player.pos+1); }
 	function prevTrack() { playTrack(player.pos-1); }
 
-	// Track id/name, highlight in playlist, and button status.
+	// Track id/name and art, highlight in playlist, and button status.
 	function updateHUD (track)
 	{
 		if (track) {
 			get("id").innerHTML = "Playing : ("+(player.pos+1)+") ";
 			get("track").innerHTML = (get("track").href = player.src).split('/').pop();
+			get("pic").src = "pic.php?track="+track.getAttribute("href");
 
 			Array.from(document.getElementsByClassName("playing")).forEach(function (el) { el.className = ""; }); // OMG.
 			track.className = "playing";
@@ -167,6 +177,7 @@ li a:hover { color: #30ff30 }
 		player.pos = player.len = -1;
 		player.volume = 0.5;
 		player.addEventListener("ended", nextTrack);
+		get("pic").height = get("pic").width = get("controls").offsetHeight;
 		updateHUD(null);
 	}
 

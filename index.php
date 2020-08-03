@@ -533,6 +533,8 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 
 	<div>
 		<img class="aquila" src="../resources/aquila_large.png">
+
+		<audio id="audio_player" controls> </audio>
 	</div>
 
 

@@ -147,7 +147,6 @@ function asBytes($ini_v) {
 	return intval($ini_v) * ($s[strtolower(substr($ini_v,-1))] ?: 1);
 }
 
-$MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('upload_max_filesize')));
 ?>
 
 <!DOCTYPE html>
@@ -387,7 +386,6 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 
 	$(function(){
 		var XSRF = (document.cookie.match('(^|; )_sfm_xsrf=([^;]*)')||0)[2];
-		var MAX_UPLOAD_SIZE = <?php echo $MAX_UPLOAD_SIZE ?>;
 		var $tbody = $('#list');
 		$(window).on('hashchange',list).trigger('hashchange');
 		$('#table').tablesorter();
@@ -418,7 +416,8 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 		}
 
 		function renderFileRow(data) {
-			var $link = $('<a class="name" />')
+			// todo
+			var $link = $('<button class="name" />')
 			.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
 			.text(data.name);
 			var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;

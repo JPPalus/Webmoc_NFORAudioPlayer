@@ -435,7 +435,7 @@ function asBytes($ini_v) {
 
 			var $html = $('<tr />')
 			.addClass(data.is_dir ? 'is_dir' : '')
-			.append( $('<button/>') )
+			.append( data.is_dir ? $('<button/>') : '')
 			.append( $('<td class="first" />').append($link) )
 			.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
 			.html($('<span class="size" />').text(formatFileSize(data.size))) )

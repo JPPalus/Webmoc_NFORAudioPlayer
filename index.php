@@ -8,7 +8,7 @@ $allow_direct_link = true; // Set to false to only allow downloads and not direc
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
-$hidden_patterns = ['*.php','.*']; // Matching files hidden in directory index
+$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -58,7 +58,7 @@ if($_GET['do'] == 'list') {
 		$directory = $file;
 		$result = [];
 		$files = array_diff(scandir($directory), ['.','..']);
-		foreach ($files as $entry) if (!is_entry_ignored($entry, $allow_show_folders, $hidden_patterns)) {
+		foreach ($files as $entry) if (is_entry_allowed($entry, $allow_show_folders, $allowed_patterns)) {
 			$i = $directory . '/' . $entry;
 			$stat = stat($i);
 			$result[] = [
@@ -99,16 +99,20 @@ if($_GET['do'] == 'list') {
 	exit;
 }
 
-function is_entry_ignored($entry, $allow_show_folders, $hidden_patterns) {
+function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
 	if ($entry === basename(__FILE__)) {
-		return true;
+		return false;
 	}
 
-	if (is_dir($entry) && !$allow_show_folders) {
+	if(fnmatch('.*', $entry)) {
+		return false;
+	}
+
+	if (is_dir($entry) && $allow_show_folders) {
 		return true;
 	}
-	foreach($hidden_patterns as $pattern) {
-		if(fnmatch($pattern,$entry)) {
+	foreach($allowed_patterns as $pattern) {
+		if(fnmatch($pattern, $entry)) {
 			return true;
 		}
 	}
@@ -382,6 +386,7 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 	<script src="../resources/jquery-3.5.1.min.js"></script>
 
 	<script>
+
 	(function($){
 		$.fn.tablesorter = function() {
 			var $table = this;
@@ -392,6 +397,7 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 			});
 			return this;
 		};
+
 		$.fn.tablesortby = function(idx,direction) {
 			var $rows = this.find('tbody tr');
 			function elementToVal(a) {
@@ -399,10 +405,12 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 				var a_val = $a_elem.attr('data-sort') || $a_elem.text();
 				return (a_val == parseInt(a_val) ? parseInt(a_val) : a_val);
 			}
+
 			$rows.sort(function(a,b){
 				var a_val = elementToVal(a), b_val = elementToVal(b);
 				return (a_val > b_val ? 1 : (a_val == b_val ? 0 : -1)) * (direction ? 1 : -1);
 			})
+			
 			this.find('th').removeClass('sort_asc sort_desc');
 			$(this).find('thead th:nth-child('+(idx+1)+')').addClass(direction ? 'sort_desc' : 'sort_asc');
 			for(var i =0;i<$rows.length;i++)
@@ -410,6 +418,7 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 			this.settablesortmarkers();
 			return this;
 		}
+
 		$.fn.retablesort = function() {
 			var $e = this.find('thead th.sort_asc, thead th.sort_desc');
 			if($e.length)
@@ -417,13 +426,16 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 
 			return this;
 		}
+
 		$.fn.settablesortmarkers = function() {
 			this.find('thead th span.indicator').remove();
 			this.find('thead th.sort_asc').append('<span class="indicator">&darr;<span>');
 			this.find('thead th.sort_desc').append('<span class="indicator">&uarr;<span>');
 			return this;
 		}
+
 	})(jQuery);
+
 	$(function(){
 		var XSRF = (document.cookie.match('(^|; )_sfm_xsrf=([^;]*)')||0)[2];
 		var MAX_UPLOAD_SIZE = <?php echo $MAX_UPLOAD_SIZE ?>;

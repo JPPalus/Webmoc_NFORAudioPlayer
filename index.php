@@ -4,7 +4,7 @@
 error_reporting( error_reporting() & ~E_NOTICE );
 
 //Security options
-$allow_direct_link = true; // Set to false to only allow downloads and not direct link
+$allow_direct_link = false; // Set to false to only allow downloads and not direct link
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded

@@ -417,7 +417,7 @@ function asBytes($ini_v) {
 
 		function renderFileRow(data) {
 			// todo
-			var $link = $('<button class="name" />')
+			var $link = $('<a class="name" />')
 			.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
 			.text(data.name);
 			var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
@@ -435,6 +435,7 @@ function asBytes($ini_v) {
 
 			var $html = $('<tr />')
 			.addClass(data.is_dir ? 'is_dir' : '')
+			.append( $('<button/>') )
 			.append( $('<td class="first" />').append($link) )
 			.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
 			.html($('<span class="size" />').text(formatFileSize(data.size))) )

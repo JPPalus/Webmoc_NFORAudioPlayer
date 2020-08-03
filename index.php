@@ -206,61 +206,10 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 		color: GoldenRod;
 	}
 
-	#mkdir {
-		display:inline-block;
-		float:right;
-		padding-top:16px;
-	}
-
 	label {
 		display:block;
 		font-size:11px;
 		color:#555;
-	}
-
-	#file_drop_target {
-		width:500px;
-		padding:12px 0;
-		border: 4px dashed #008700;
-		font-size:12px;
-		color:#ccc;
-		text-align: center;
-		float:right;
-		margin-right:20px;
-	}
-
-	#file_drop_target.drag_over {
-		border: 4px dashed #96C4EA;
-		color: #96C4EA;
-	}
-
-	#upload_progress {
-		padding: 4px 0;
-	}
-
-	#upload_progress .error {
-		color:#a00;
-	}
-
-	#upload_progress > div {
-		padding:3px 0;
-	}
-
-	.no_write #mkdir, .no_write #file_drop_target {
-		display: none
-	}
-
-	.progress_track {
-		display:inline-block;
-		width:200px;
-		height:10px;
-		border:1px solid #333;
-		margin: 0 4px 0 10px;
-	}
-
-	.progress {
-		background-color: #82CFFA;
-		height:10px;
 	}
 
 	footer {
@@ -447,17 +396,6 @@ $MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('uploa
 			$.post("",{'do':'delete',file:$(this).attr('data-file'),xsrf:XSRF},function(response){
 				list();
 			},'json');
-			return false;
-		});
-
-		$('#mkdir').submit(function(e) {
-			var hashval = decodeURIComponent(window.location.hash.substr(1)),
-			$dir = $(this).find('[name=name]');
-			e.preventDefault();
-			$dir.val().length && $.post('?',{'do':'mkdir',name:$dir.val(),xsrf:XSRF,file:hashval},function(data){
-				list();
-			},'json');
-			$dir.val('');
 			return false;
 		});
 

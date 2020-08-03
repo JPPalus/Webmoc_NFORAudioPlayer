@@ -10,3 +10,5 @@ The `.php` file is a self-sufficient drop-in of the project.
 * Empecher la piste s'arrêter en cas de changement de dossier
 * Peut être ajouter des contrôles supplémentaires au lecteur ?
 * Visuel
+* Afficher les métadonnées
+* Album art

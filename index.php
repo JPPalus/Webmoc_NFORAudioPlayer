@@ -496,7 +496,8 @@ function asBytes($ini_v) {
 
 	<div id="upload_progress"></div>
 	<table id="table"><thead><tr>
-		<th>  Name</th>
+		<th>Play</th>
+		<th>Name</th>
 		<th>Size</th>
 		<th>Modified</th>
 		<th>Permissions</th>

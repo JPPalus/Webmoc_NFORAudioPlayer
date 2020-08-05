@@ -445,9 +445,11 @@ $(function(){
 		// todo
 		var $link = $('<a class="name" />')
 		.attr('data-value', data.is_dir ? '#' : './' + data.path)
+		.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
 		.text(data.name);
-		if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
-		// if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+
+		
+		if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
 		if (!data.is_dir) $link.attr('onclick', "play(this)");
 		
 		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;

@@ -114,13 +114,13 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 		return true;
 	}
 
-	// foreach($allowed_patterns as $pattern) {
-	// 	if(fnmatch($pattern,$entry)) {
-	// 		return true;
-	// 	}
-	// }
+	foreach($allowed_patterns as $pattern) {
+		if(!fnmatch($pattern, $entry)) {
+			return false;
+		}
+	}
 
-	return true;
+	return false;
 }
 
 function get_absolute_path($path) {

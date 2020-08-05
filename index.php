@@ -131,6 +131,19 @@ function get_absolute_path($path) {
 		}
 	}
 	return implode(DIRECTORY_SEPARATOR, $absolutes);
+
+	function err($code,$msg) {
+		http_response_code($code);
+		header("Content-Type: application/json");
+		echo json_encode(['error' => ['code'=>intval($code), 'msg' => $msg]]);
+		exit;
+	}
+	
+	function asBytes($ini_v) {
+		$ini_v = trim($ini_v);
+		$s = ['g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10];
+		return intval($ini_v) * ($s[strtolower(substr($ini_v,-1))] ?: 1);
+	}
 }
 
 ?>
@@ -499,19 +512,6 @@ $(function(){
 		for(var pos = 0;bytes >= 1000; pos++,bytes /= 1024);
 		var d = Math.round(bytes*10);
 		return pos ? [parseInt(d/10),".",d%10," ",s[pos]].join('') : bytes + ' bytes';
-	}
-	
-	function err($code,$msg) {
-		http_response_code($code);
-		header("Content-Type: application/json");
-		echo json_encode(['error' => ['code'=>intval($code), 'msg' => $msg]]);
-		exit;
-	}
-	
-	function asBytes($ini_v) {
-		$ini_v = trim($ini_v);
-		$s = ['g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10];
-		return intval($ini_v) * ($s[strtolower(substr($ini_v,-1))] ?: 1);
 	}
 	
 })

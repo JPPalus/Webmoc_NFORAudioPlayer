@@ -12,3 +12,4 @@ The `.php` file is a self-sufficient drop-in of the project.
 * Visuel
 * Afficher les métadonnées
 * Album art
+* Gérer le MIDI

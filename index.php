@@ -110,13 +110,11 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 		}
 	}
 	
-	if (is_dir($entry)) {
-		// if (!$allow_show_folders) {
-		// 	return false;
-		// } else {
-		// 	return true;
-		// }
-		return true;
+	if (is_dir($entry) && !$allow_show_folders) {
+		$files = scandir('folder/');
+		foreach($files as $file) {
+			return is_entry_allowed($file, $allow_show_folders, $allowed_patterns, $hidden_patterns);
+		}
 	}
 	
 	foreach($allowed_patterns as $pattern) {

@@ -8,7 +8,7 @@ $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
 $hidden_patterns = ['*.php','.*']; // Matching files hidden in directory index
-$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg', '*.mid']; // Matching files hidden in directory index
+$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg', '*.mid', '*/']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -104,17 +104,14 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 		return false;
 	}
 	
-	foreach($hidden_patterns as $pattern) {
-		if(fnmatch($pattern, $entry)) {
-			return false;
-		}
-	}
+	// foreach($hidden_patterns as $pattern) {
+	// 	if(fnmatch($pattern, $entry)) {
+	// 		return false;
+	// 	}
+	// }
 	
 	if (is_dir($entry) && !$allow_show_folders) {
-		$files = scandir('folder/');
-		foreach($files as $file) {
-			return is_entry_allowed($file, $allow_show_folders, $allowed_patterns, $hidden_patterns);
-		}
+		return false;
 	}
 	
 	foreach($allowed_patterns as $pattern) {

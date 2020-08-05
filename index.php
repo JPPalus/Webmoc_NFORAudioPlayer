@@ -441,40 +441,66 @@ $(function(){
 		},'json');
 	}
 	
-	function renderFileRow(data) {
-		// todo
-		var $link = $('<a class="name" />')
-		.attr('data-value', data.is_dir ? '#' : './' + data.path)
-		.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
-		.text(data.name);
+	// function renderFileRow(data) {
+	// 	// todo
+	// 	var $link = $('<a class="name" />')
+	// 	.attr('data-value', data.is_dir ? '#' : './' + data.path)
+	// 	.text(data.name);
+		
+	// 	if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+	// 	if (!data.is_dir) $link.attr('onclick', "play(this)");
+		
+	// 	var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
+		
+	// 	if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
+		
+	// 	var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
+	// 	.addClass('download').text('Download');
+	// 	var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
+	// 	var perms = [];
+		
+	// 	if(data.is_readable) perms.push('read');
+	// 	if(data.is_writable) perms.push('write');
+	// 	if(data.is_executable) perms.push('exec');
+		
+	// 	var $html = $('<tr />')
+	// 	.addClass(data.is_dir ? 'is_dir' : '')
+	// 	.append( $('<td class="first" />').append($link) )
+	// 	.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
+	// 	.html($('<span class="size" />').text(formatFileSize(data.size))) )
+	// 	.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
+	// 	.append( $('<td/>').text(perms.join('+')) )
+	// 	.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
+	// 	return $html;
+	// }
 
-		
-		// if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
-		if (!data.is_dir) $link.attr('onclick', "play(this)");
-		
-		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
-		
-		if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
-		
-		var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
-		.addClass('download').text('Download');
-		var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
-		var perms = [];
-		
-		if(data.is_readable) perms.push('read');
-		if(data.is_writable) perms.push('write');
-		if(data.is_executable) perms.push('exec');
-		
-		var $html = $('<tr />')
-		.addClass(data.is_dir ? 'is_dir' : '')
-		.append( $('<td class="first" />').append($link) )
-		.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
-		.html($('<span class="size" />').text(formatFileSize(data.size))) )
-		.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
-		.append( $('<td/>').text(perms.join('+')) )
-		.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
-		return $html;
-	}
+	function renderFileRow(data) {
+			var $link = $('<a class="name" />')
+			.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
+			.text(data.name);
+			var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
+
+			if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
+
+			var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
+			.addClass('download').text('Download');
+			var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
+			var perms = [];
+
+			if(data.is_readable) perms.push('read');
+			if(data.is_writable) perms.push('write');
+			if(data.is_executable) perms.push('exec');
+
+			var $html = $('<tr />')
+			.addClass(data.is_dir ? 'is_dir' : '')
+			.append( $('<td class="first" />').append($link) )
+			.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
+			.html($('<span class="size" />').text(formatFileSize(data.size))) )
+			.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
+			.append( $('<td/>').text(perms.join('+')) )
+			.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
+			return $html;
+		}
 	
 	function renderBreadcrumbs(path) {
 		var base = "",

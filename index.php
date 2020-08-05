@@ -139,6 +139,7 @@ $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
 $hidden_patterns = ['*.php','.*']; // Matching files hidden in directory index
+$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -171,13 +172,6 @@ if(strpos($_REQUEST['file'], DIRECTORY_SEPARATOR) === 0)
 err(403,"Forbidden");
 if(preg_match('@^.+://@',$_REQUEST['file'])) {
 	err(403,"Forbidden");
-}
-
-if(!$_COOKIE['_sfm_xsrf'])
-setcookie('_sfm_xsrf',bin2hex(openssl_random_pseudo_bytes(16)));
-if($_POST) {
-	if($_COOKIE['_sfm_xsrf'] !== $_POST['xsrf'] || !$_POST['xsrf'])
-	err(403,"XSRF Failure");
 }
 
 $file = $_REQUEST['file'] ?: '.';

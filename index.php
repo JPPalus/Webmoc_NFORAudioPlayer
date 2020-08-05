@@ -7,8 +7,8 @@ $allow_direct_link = true; // Set to false to only allow downloads and not direc
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
-$hidden_patterns = ['*.php']; // Matching files hidden in directory index
-$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg']; // Matching files hidden in directory index
+$hidden_patterns = ['*.php','.*']; // Matching files hidden in directory index
+$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg', '*.mid']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -452,6 +452,7 @@ $(function(){
 		.text(data.name);
 		
 		if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+		if (!data.is_dir) $link.attr('data-type', data.path.split('.').pop());
 		if (!data.is_dir) $link.attr('onclick', "play(this)");
 		
 		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
@@ -514,11 +515,14 @@ function play(e) {
 	
 	var audio = document.getElementById('audio_player');
 	var source = document.getElementById('audio_source');
-	
+
+	var date_type = e.getAttribute('data-type');
 	source.src = e.getAttribute('data-value');
 	
+	// if audiofile
 	audio.load(); //call this to just preload the audio without playing
 	audio.play(); //call this to play the song right away
+
 	
 	// get filename
 	var text_field = document.getElementById('audio_data');
@@ -526,6 +530,7 @@ function play(e) {
 	filename.replace("/", "aAa");
 	text_field.value = filename;
 	
+	text_field.value = date_type;
 	// get art
 }
 

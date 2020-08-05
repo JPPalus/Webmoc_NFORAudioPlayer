@@ -8,7 +8,7 @@ $allow_direct_link = true; // Set to false to only allow downloads and not direc
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
-$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg']; // Matching files hidden in directory index
+$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg', '*]; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -131,6 +131,19 @@ function get_absolute_path($path) {
 		}
 	}
 	return implode(DIRECTORY_SEPARATOR, $absolutes);
+}
+                   
+function err($code,$msg) {
+	http_response_code($code);
+	header("Content-Type: application/json");
+	echo json_encode(['error' => ['code'=>intval($code), 'msg' => $msg]]);
+	exit;
+}
+
+function asBytes($ini_v) {
+	$ini_v = trim($ini_v);
+	$s = ['g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10];
+	return intval($ini_v) * ($s[strtolower(substr($ini_v,-1))] ?: 1);
 }
 
 ?>
@@ -358,6 +371,7 @@ function get_absolute_path($path) {
 	</style>
 
 	<script src="../resources/jquery-3.5.1.min.js"></script>
+    <script type='text/javascript' src='../resources/midi.js'></script>                    
 
 	<script>
 
@@ -502,7 +516,8 @@ function get_absolute_path($path) {
 		}
 
 	})
-
+	
+    // play music on click                   
 	function play(e) {
 
 		var audio = document.getElementById('audio_player');
@@ -521,7 +536,7 @@ function get_absolute_path($path) {
 
 		// get art
 	}
-
+	
 	</script>
 
 	<head>
@@ -557,3 +572,4 @@ function get_absolute_path($path) {
 			</div>
 			<footer></a></footer>
 		</body></html>
+

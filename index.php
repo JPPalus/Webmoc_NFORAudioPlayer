@@ -120,7 +120,7 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 		}
 	}
 
-	return false;
+	return true;
 }
 
 function get_absolute_path($path) {

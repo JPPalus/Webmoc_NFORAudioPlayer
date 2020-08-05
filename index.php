@@ -107,8 +107,8 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
 		return false;
 	}
 	
-	if (is_dir($entry) && $allow_show_folders) {
-		return true;
+	if (is_dir($entry) && !$allow_show_folders) {
+		return false;
 	}
 	
 	foreach($allowed_patterns as $pattern) {

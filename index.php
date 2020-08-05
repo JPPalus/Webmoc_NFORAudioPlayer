@@ -235,7 +235,7 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
 		return false;
 	}
 
-	if (fnmatch($entry, '.github')) {
+	if (fnmatch($entry, '.git')) {
 		return false;
 	}
 

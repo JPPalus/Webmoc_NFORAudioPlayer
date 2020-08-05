@@ -4,7 +4,7 @@
 error_reporting( error_reporting() & ~E_NOTICE );
 
 //Security options
-$allow_direct_link = false; // Set to false to only allow downloads and not direct link
+$allow_direct_link = true; // Set to false to only allow downloads and not direct link
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
@@ -42,7 +42,6 @@ err(403,"Forbidden");
 if(preg_match('@^.+://@',$_REQUEST['file'])) {
 	err(403,"Forbidden");
 }
-
 
 if(!$_COOKIE['_sfm_xsrf'])
 setcookie('_sfm_xsrf',bin2hex(openssl_random_pseudo_bytes(16)));
@@ -82,7 +81,7 @@ if($_GET['do'] == 'list') {
 	}
 	echo json_encode(['success' => true, 'is_writable' => is_writable($file), 'results' =>$result]);
 	exit;
-	
+
 } elseif ($_GET['do'] == 'download') {
 	foreach($disallowed_patterns as $pattern)
 	if(fnmatch($pattern, $file))
@@ -134,19 +133,6 @@ function get_absolute_path($path) {
 	return implode(DIRECTORY_SEPARATOR, $absolutes);
 }
 
-function err($code,$msg) {
-	http_response_code($code);
-	header("Content-Type: application/json");
-	echo json_encode(['error' => ['code'=>intval($code), 'msg' => $msg]]);
-	exit;
-}
-
-function asBytes($ini_v) {
-	$ini_v = trim($ini_v);
-	$s = ['g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10];
-	return intval($ini_v) * ($s[strtolower(substr($ini_v,-1))] ?: 1);
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -155,12 +141,16 @@ function asBytes($ini_v) {
 
 	<style>
 
-	.aquila {
+	.voxcast {
 		position: absolute;
-		top: 8px;
-		right: 16px;
+		top: 2px;
+		right: 45px;
 		padding-top: 4px;
 		width: 100px;
+	}
+
+	.aquila {
+		width: 30px;
 	}
 
 
@@ -192,6 +182,10 @@ function asBytes($ini_v) {
 		color: GoldenRod;
 	}
 
+	a {
+		cursor:pointer;
+	}
+
 	thead {
 		border-top: 5px solid #018a30;
 		border-bottom: 5px solid #018a30;
@@ -201,8 +195,17 @@ function asBytes($ini_v) {
 	}
 
 	#top {
-		height:52px;
+		position: absolute;
+		top: 130px;
+		height:60px;
 		color: GoldenRod;
+	}
+
+	#mid {
+		position: absolute;
+		left: 15px;
+		right: 15px;
+		top: 190px;
 	}
 
 	label {
@@ -226,9 +229,31 @@ function asBytes($ini_v) {
 		font-weight: bold;
 		padding-top:34px;
 		font-size:15px;
-		color:red;
+		color: red;
 		display:inline-block;
 		float:left;
+	}
+
+	/* firefox only */
+	#audio_player {
+		background-color: Gold;
+		width: 50%;
+		border-right: 2px inset #484015;
+	}
+
+	#audio_data {
+		resize: none;
+		font-family: "lucida grande", "Segoe UI", Arial, sans-serif;
+		font-size: 14px;
+		height: 20px;
+		width: 50%;
+		background-color: Maroon;
+		font-weight: bold;
+		color: FloralWhite;
+		border-top: 0px inset DarkRed;
+		border-bottom: 0px inset DarkRed;
+		border-left: 0px inset DarkRed;
+		border-right: 0px inset DarkRed;
 	}
 
 	#folder_actions {
@@ -257,6 +282,7 @@ function asBytes($ini_v) {
 	table {
 		border-collapse: collapse;
 		width:100%;
+
 	}
 
 	thead {
@@ -358,7 +384,7 @@ function asBytes($ini_v) {
 				var a_val = elementToVal(a), b_val = elementToVal(b);
 				return (a_val > b_val ? 1 : (a_val == b_val ? 0 : -1)) * (direction ? 1 : -1);
 			})
-			
+
 			this.find('th').removeClass('sort_asc sort_desc');
 			$(this).find('thead th:nth-child('+(idx+1)+')').addClass(direction ? 'sort_desc' : 'sort_asc');
 			for(var i =0;i<$rows.length;i++)
@@ -381,7 +407,6 @@ function asBytes($ini_v) {
 			this.find('thead th.sort_desc').append('<span class="indicator">&uarr;<span>');
 			return this;
 		}
-
 	})(jQuery);
 
 	$(function(){
@@ -418,8 +443,11 @@ function asBytes($ini_v) {
 		function renderFileRow(data) {
 			// todo
 			var $link = $('<a class="name" />')
-			.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
+			.attr('data-value', data.is_dir ? '#' : './' + data.path)
 			.text(data.name);
+			if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+			if (!data.is_dir) $link.attr('onclick', "play(this)");
+
 			var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
 
 			if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
@@ -435,7 +463,6 @@ function asBytes($ini_v) {
 
 			var $html = $('<tr />')
 			.addClass(data.is_dir ? 'is_dir' : '')
-			.append( data.is_dir ? $('<tr />') : $('<button/>'))
 			.append( $('<td class="first" />').append($link) )
 			.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
 			.html($('<span class="size" />').text(formatFileSize(data.size))) )
@@ -447,7 +474,7 @@ function asBytes($ini_v) {
 
 		function renderBreadcrumbs(path) {
 			var base = "",
-			$html = $('<div/>').append( $('<a href=#>Home</a></div>') );
+			$html = $('<div/>').append( $('<a href=#><img class="aquila" src="../resources/aquila.png"></a></div>') );
 			$.each(path.split('%2F'),function(k,v){
 				if(v) {
 					var v_as_text = decodeURIComponent(v);
@@ -473,7 +500,27 @@ function asBytes($ini_v) {
 			var d = Math.round(bytes*10);
 			return pos ? [parseInt(d/10),".",d%10," ",s[pos]].join('') : bytes + ' bytes';
 		}
+
 	})
+
+	function play(e) {
+
+		var audio = document.getElementById('audio_player');
+		var source = document.getElementById('audio_source');
+
+		source.src = e.getAttribute('data-value');
+
+		audio.load(); //call this to just preload the audio without playing
+		audio.play(); //call this to play the song right away
+
+		// get filename
+		var text_field = document.getElementById('audio_data');
+		var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+		filename.replace("/", "aAa");
+		text_field.value = filename;
+
+		// get art
+	}
 
 	</script>
 
@@ -482,28 +529,31 @@ function asBytes($ini_v) {
 	</head>
 
 	<div>
-		<img class="aquila" src="../resources/aquila_large.png">
+		<img class="voxcast" src="../resources/voxcast.png">
 
-		<audio id="audio_player" controls> </audio>
+		<audio id="audio_player" controls>
+			<source id="audio_source" src=""> </source>
+		</audio>
 	</div>
+	<div>
+		<textarea id="audio_data" row="1" cols="1"></textarea>
+		</div
 
+		<body>
+			<div id="top">
+				<div id="breadcrumb">&nbsp;</div>
+			</div>
 
-	<body>
-		<div id="top">
+			<div id="mid">
+				<table id="table"><thead><tr>
+					<th>Name</th>
+					<th>Size</th>
+					<th>Modified</th>
+					<th>Permissions</th>
+					<th>Actions</th>
+				</tr></thead><tbody id="list">
 
-		<div id="breadcrumb">&nbsp;</div>
-	</div>
-
-	<div id="upload_progress"></div>
-	<table id="table"><thead><tr>
-		<th>Play</th>
-		<th>Name</th>
-		<th>Size</th>
-		<th>Modified</th>
-		<th>Permissions</th>
-		<th>Actions</th>
-	</tr></thead><tbody id="list">
-
-	</tbody></table>
-	<footer></a></footer>
-</body></html>
+				</tbody></table>
+			</div>
+			<footer></a></footer>
+		</body></html>

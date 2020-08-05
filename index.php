@@ -8,7 +8,7 @@ $allow_direct_link = true; // Set to false to only allow downloads and not direc
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
-$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg', '*/']; // Matching files hidden in directory index
+$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -132,19 +132,6 @@ function get_absolute_path($path) {
 		}
 	}
 	return implode(DIRECTORY_SEPARATOR, $absolutes);
-	
-	function err($code,$msg) {
-		http_response_code($code);
-		header("Content-Type: application/json");
-		echo json_encode(['error' => ['code'=>intval($code), 'msg' => $msg]]);
-		exit;
-	}
-	
-	function asBytes($ini_v) {
-		$ini_v = trim($ini_v);
-		$s = ['g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10];
-		return intval($ini_v) * ($s[strtolower(substr($ini_v,-1))] ?: 1);
-	}
 }
 
 ?>
@@ -459,7 +446,8 @@ $(function(){
 		var $link = $('<a class="name" />')
 		.attr('data-value', data.is_dir ? '#' : './' + data.path)
 		.text(data.name);
-		if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+		if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
+		// if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
 		if (!data.is_dir) $link.attr('onclick', "play(this)");
 		
 		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;

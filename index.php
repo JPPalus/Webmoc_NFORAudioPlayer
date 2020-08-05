@@ -214,7 +214,21 @@ if($_GET['do'] == 'list') {
 	echo json_encode(['success' => true, 'is_writable' => is_writable($file), 'results' =>$result]);
 	exit;
 	
-} 
+} elseif ($_GET['do'] == 'download') {
+	foreach($disallowed_patterns as $pattern)
+	if(fnmatch($pattern, $file))
+	err(403,"Files of this type are not allowed.");
+
+	$filename = basename($file);
+	$finfo = finfo_open(FILEINFO_MIME_TYPE);
+	header('Content-Type: ' . finfo_file($finfo, $file));
+	header('Content-Length: '. filesize($file));
+	header(sprintf('Content-Disposition: attachment; filename=%s',
+	strpos('MSIE',$_SERVER['HTTP_REFERER']) ? rawurlencode($filename) : "\"$filename\"" ));
+	ob_flush();
+	readfile($file);
+	exit;
+}
 
 function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidden_patterns) {
 	if ($entry === basename(__FILE__)) {

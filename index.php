@@ -115,12 +115,12 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 	}
 
 	foreach($allowed_patterns as $pattern) {
-		if(!fnmatch($pattern, $entry)) {
-			return false;
+		if(fnmatch($pattern, $entry)) {
+			return true;
 		}
 	}
 
-	return true;
+	return false;
 }
 
 function get_absolute_path($path) {

@@ -110,10 +110,10 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
 	if (is_dir($entry) && $allow_show_folders) {
 		return true;
 	}
-
+	
 	foreach($allowed_patterns as $pattern) {
 		if(fnmatch($pattern, $entry)) {
-			return false;
+			return true;
 		}
 	}
 	return false;
@@ -435,6 +435,17 @@ $(function(){
 		},'json');
 		return false;
 	});
+
+	$('#mkdir').submit(function(e) {
+			var hashval = decodeURIComponent(window.location.hash.substr(1)),
+			$dir = $(this).find('[name=name]');
+			e.preventDefault();
+			$dir.val().length && $.post('?',{'do':'mkdir',name:$dir.val(),xsrf:XSRF,file:hashval},function(data){
+				list();
+			},'json');
+			$dir.val('');
+			return false;
+		});
 	
 	function list() {
 		var hashval = window.location.hash.substr(1);

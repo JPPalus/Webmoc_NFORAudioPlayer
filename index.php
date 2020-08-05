@@ -174,6 +174,14 @@ if(preg_match('@^.+://@',$_REQUEST['file'])) {
 	err(403,"Forbidden");
 }
 
+// XSRF check
+if(!$_COOKIE['_sfm_xsrf'])
+setcookie('_sfm_xsrf',bin2hex(openssl_random_pseudo_bytes(16)));
+if($_POST) {
+	if($_COOKIE['_sfm_xsrf'] !== $_POST['xsrf'] || !$_POST['xsrf'])
+	err(403,"XSRF Failure");
+}
+
 $file = $_REQUEST['file'] ?: '.';
 
 if($_GET['do'] == 'list') {
@@ -181,7 +189,7 @@ if($_GET['do'] == 'list') {
 		$directory = $file;
 		$result = [];
 		$files = array_diff(scandir($directory), ['.','..']);
-		foreach ($files as $entry) if (!is_entry_ignored($entry, $allow_show_folders, $hidden_patterns)) {
+		foreach ($files as $entry) if (is_entry_allowed($entry, $allow_show_folders, $allowed_patterns)) {
 			$i = $directory . '/' . $entry;
 			$stat = stat($i);
 			$result[] = [
@@ -222,20 +230,20 @@ if($_GET['do'] == 'list') {
 	exit;
 }
 
-function is_entry_ignored($entry, $allow_show_folders, $hidden_patterns) {
+function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
 	if ($entry === basename(__FILE__)) {
-		return true;
+		return false;
 	}
 
-	if (is_dir($entry) && !$allow_show_folders) {
+	if (is_dir($entry) && $allow_show_folders) {
 		return true;
 	}
-	foreach($hidden_patterns as $pattern) {
-		if(fnmatch($pattern,$entry)) {
-			return true;
+	foreach($allowed_patterns as $pattern) {
+		if(!fnmatch($pattern,$entry)) {
+			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
 function get_absolute_path($path) {

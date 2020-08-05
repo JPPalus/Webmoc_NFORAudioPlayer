@@ -110,8 +110,12 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 		}
 	}
 	
-	if (is_dir($entry) && !$allow_show_folders) {
-		return false;
+	if (is_dir($entry)) {
+		if (!$allow_show_folders) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	foreach($allowed_patterns as $pattern) {

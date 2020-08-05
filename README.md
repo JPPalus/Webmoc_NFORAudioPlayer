@@ -1,6 +1,14 @@
-# webmoc
+# VoxCasterPublicae
 A javascript small-form audio player, inspired by moc (music on console).
 
-The `player.html` file is a self-sufficient drop-in of the project.
+The `.php` file is a self-sufficient drop-in of the project.
 
-The player itself expects an adjacent `music/` folder, which should contain a `playlists/` subdirectory with all available playlists in [M3U format](https://en.wikipedia.org/wiki/M3U).
+## TODO
+
+* Gestion des playlistes M3U
+* Un machin pour indiquer la piste en cours de lecture
+* Empecher la piste s'arrêter en cas de changement de dossier
+* Peut être ajouter des contrôles supplémentaires au lecteur ?
+* Visuel
+* Afficher les métadonnées
+* Album art

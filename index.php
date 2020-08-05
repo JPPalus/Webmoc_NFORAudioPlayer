@@ -240,7 +240,7 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
 	}
 
 	foreach($allowed_patterns as $pattern) {
-		if(!fnmatch($allowed_patterns,$entry)) {
+		if(!fnmatch($pattern,$entry)) {
 			return false;
 		}
 	}

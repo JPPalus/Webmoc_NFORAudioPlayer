@@ -132,7 +132,7 @@ function get_absolute_path($path) {
 		}
 	}
 	return implode(DIRECTORY_SEPARATOR, $absolutes);
-
+	
 	function err($code,$msg) {
 		http_response_code($code);
 		header("Content-Type: application/json");
@@ -457,8 +457,7 @@ $(function(){
 	function renderFileRow(data) {
 		// todo
 		var $link = $('<a class="name" />')
-		// .attr('data-value', data.is_dir ? '#' : './' + data.path)
-		.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
+		.attr('data-value', data.is_dir ? '#' : './' + data.path)
 		.text(data.name);
 		if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
 		if (!data.is_dir) $link.attr('onclick', "play(this)");
@@ -553,7 +552,7 @@ function play(e) {
 </div>
 <div>
 <textarea id="audio_data" row="1" cols="1"></textarea>
-</div
+</div>
 
 <body>
 <div id="top">

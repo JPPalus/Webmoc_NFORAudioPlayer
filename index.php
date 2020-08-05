@@ -4,11 +4,141 @@
 error_reporting( error_reporting() & ~E_NOTICE );
 
 //Security options
+// $allow_direct_link = true; // Set to false to only allow downloads and not direct link
+// $allow_show_folders = true; // Set to false to hide all subdirectories
+
+// $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
+// $allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg']; // Matching files hidden in directory index
+
+// $PASSWORD = '';  // Set the password, to access the file manager... (optional)
+
+// if($PASSWORD) {
+// 	session_start();
+// 	if(!$_SESSION['_sfm_allowed']) {
+// 		// sha1, and random bytes to thwart timing attacks.  Not meant as secure hashing.
+// 		$t = bin2hex(openssl_random_pseudo_bytes(10));
+// 		if($_POST['p'] && sha1($t.$_POST['p']) === sha1($t.$PASSWORD)) {
+// 			$_SESSION['_sfm_allowed'] = true;
+// 			header('Location: ?');
+// 		}
+// 		echo '<html><body><form action=? method=post>PASSWORD:<input type=password name=p autofocus/></form></body></html>';
+// 		exit;
+// 	}
+// }
+
+// must be in UTF-8 or `basename` doesn't work
+// setlocale(LC_ALL,'en_US.UTF-8');
+
+// $tmp_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+// if(DIRECTORY_SEPARATOR==='\\') $tmp_dir = str_replace('/',DIRECTORY_SEPARATOR,$tmp_dir);
+// $tmp = get_absolute_path($tmp_dir . '/' .$_REQUEST['file']);
+
+// if($tmp === false)
+// err(404,'File or Directory Not Found');
+// if(substr($tmp, 0,strlen($tmp_dir)) !== $tmp_dir)
+// err(403,"Forbidden");
+// if(strpos($_REQUEST['file'], DIRECTORY_SEPARATOR) === 0)
+// err(403,"Forbidden");
+// if(preg_match('@^.+://@',$_REQUEST['file'])) {
+// 	err(403,"Forbidden");
+// }
+
+// if(!$_COOKIE['_sfm_xsrf'])
+// setcookie('_sfm_xsrf',bin2hex(openssl_random_pseudo_bytes(16)));
+// if($_POST) {
+// 	if($_COOKIE['_sfm_xsrf'] !== $_POST['xsrf'] || !$_POST['xsrf'])
+// 	err(403,"XSRF Failure");
+// }
+
+// $file = $_REQUEST['file'] ?: '.';
+
+// if($_GET['do'] == 'list') {
+// 	if (is_dir($file)) {
+// 		$directory = $file;
+// 		$result = [];
+// 		$files = array_diff(scandir($directory), ['.','..']);
+// 		foreach ($files as $entry) if (is_entry_allowed($entry, $allow_show_folders, $allowed_patterns)) {
+// 			$i = $directory . '/' . $entry;
+// 			$stat = stat($i);
+// 			$result[] = [
+// 				'mtime' => $stat['mtime'],
+// 				'size' => $stat['size'],
+// 				'name' => basename($i),
+// 				'path' => preg_replace('@^\./@', '', $i),
+// 				'is_dir' => is_dir($i),
+// 				'is_readable' => is_readable($i),
+// 				'is_writable' => is_writable($i),
+// 				'is_executable' => is_executable($i),
+// 			];
+// 		}
+// 		usort($result,function($f1,$f2){
+// 			$f1_key = ($f1['is_dir']?:2) . $f1['name'];
+// 			$f2_key = ($f2['is_dir']?:2) . $f2['name'];
+// 			return $f1_key > $f2_key;
+// 		});
+// 	} else {
+// 		err(412,"Not a Directory");
+// 	}
+// 	echo json_encode(['success' => true, 'is_writable' => is_writable($file), 'results' =>$result]);
+// 	exit;
+	
+// } elseif ($_GET['do'] == 'download') {
+// 	foreach($disallowed_patterns as $pattern)
+// 	if(fnmatch($pattern, $file))
+// 	err(403,"Files of this type are not allowed.");
+	
+// 	$filename = basename($file);
+// 	$finfo = finfo_open(FILEINFO_MIME_TYPE);
+// 	header('Content-Type: ' . finfo_file($finfo, $file));
+// 	header('Content-Length: '. filesize($file));
+// 	header(sprintf('Content-Disposition: attachment; filename=%s',
+// 	strpos('MSIE',$_SERVER['HTTP_REFERER']) ? rawurlencode($filename) : "\"$filename\"" ));
+// 	ob_flush();
+// 	readfile($file);
+// 	exit;
+// }
+
+// function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
+// 	if ($entry === basename(__FILE__)) {
+// 		return false;
+// 	}
+	
+// 	if(fnmatch('.*', $entry)) {
+// 		return false;
+// 	}
+	
+// 	if (is_dir($entry) && $allow_show_folders) {
+// 		return true;
+// 	}
+	
+// 	foreach($allowed_patterns as $pattern) {
+// 		if(fnmatch($pattern, $entry)) {
+// 			return true;
+// 		}
+// 	}
+// 	return false;
+// }
+
+// function get_absolute_path($path) {
+// 	$path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+// 	$parts = explode(DIRECTORY_SEPARATOR, $path);
+// 	$absolutes = [];
+// 	foreach ($parts as $part) {
+// 		if ('.' == $part) continue;
+// 		if ('..' == $part) {
+// 			array_pop($absolutes);
+// 		} else {
+// 			$absolutes[] = $part;
+// 		}
+// 	}
+// 	return implode(DIRECTORY_SEPARATOR, $absolutes);
+// }
+
 $allow_direct_link = true; // Set to false to only allow downloads and not direct link
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
-$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg']; // Matching files hidden in directory index
+$hidden_patterns = ['*.php','.*']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -57,7 +187,7 @@ if($_GET['do'] == 'list') {
 		$directory = $file;
 		$result = [];
 		$files = array_diff(scandir($directory), ['.','..']);
-		foreach ($files as $entry) if (is_entry_allowed($entry, $allow_show_folders, $allowed_patterns)) {
+		foreach ($files as $entry) if (!is_entry_ignored($entry, $allow_show_folders, $hidden_patterns)) {
 			$i = $directory . '/' . $entry;
 			$stat = stat($i);
 			$result[] = [
@@ -86,7 +216,7 @@ if($_GET['do'] == 'list') {
 	foreach($disallowed_patterns as $pattern)
 	if(fnmatch($pattern, $file))
 	err(403,"Files of this type are not allowed.");
-	
+
 	$filename = basename($file);
 	$finfo = finfo_open(FILEINFO_MIME_TYPE);
 	header('Content-Type: ' . finfo_file($finfo, $file));
@@ -98,21 +228,16 @@ if($_GET['do'] == 'list') {
 	exit;
 }
 
-function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
+function is_entry_ignored($entry, $allow_show_folders, $hidden_patterns) {
 	if ($entry === basename(__FILE__)) {
-		return false;
-	}
-	
-	if(fnmatch('.*', $entry)) {
-		return false;
-	}
-	
-	if (is_dir($entry) && $allow_show_folders) {
 		return true;
 	}
-	
-	foreach($allowed_patterns as $pattern) {
-		if(fnmatch($pattern, $entry)) {
+
+	if (is_dir($entry) && !$allow_show_folders) {
+		return true;
+	}
+	foreach($hidden_patterns as $pattern) {
+		if(fnmatch($pattern,$entry)) {
 			return true;
 		}
 	}
@@ -133,6 +258,21 @@ function get_absolute_path($path) {
 	}
 	return implode(DIRECTORY_SEPARATOR, $absolutes);
 }
+
+function err($code,$msg) {
+	http_response_code($code);
+	header("Content-Type: application/json");
+	echo json_encode(['error' => ['code'=>intval($code), 'msg' => $msg]]);
+	exit;
+}
+
+function asBytes($ini_v) {
+	$ini_v = trim($ini_v);
+	$s = ['g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10];
+	return intval($ini_v) * ($s[strtolower(substr($ini_v,-1))] ?: 1);
+}
+
+$MAX_UPLOAD_SIZE = min(asBytes(ini_get('post_max_size')), asBytes(ini_get('upload_max_filesize')));
 
 ?>
 
@@ -441,66 +581,38 @@ $(function(){
 		},'json');
 	}
 	
-	// function renderFileRow(data) {
-	// 	// todo
-	// 	var $link = $('<a class="name" />')
-	// 	.attr('data-value', data.is_dir ? '#' : './' + data.path)
-	// 	.text(data.name);
-		
-	// 	if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
-	// 	if (!data.is_dir) $link.attr('onclick', "play(this)");
-		
-	// 	var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
-		
-	// 	if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
-		
-	// 	var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
-	// 	.addClass('download').text('Download');
-	// 	var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
-	// 	var perms = [];
-		
-	// 	if(data.is_readable) perms.push('read');
-	// 	if(data.is_writable) perms.push('write');
-	// 	if(data.is_executable) perms.push('exec');
-		
-	// 	var $html = $('<tr />')
-	// 	.addClass(data.is_dir ? 'is_dir' : '')
-	// 	.append( $('<td class="first" />').append($link) )
-	// 	.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
-	// 	.html($('<span class="size" />').text(formatFileSize(data.size))) )
-	// 	.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
-	// 	.append( $('<td/>').text(perms.join('+')) )
-	// 	.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
-	// 	return $html;
-	// }
-
 	function renderFileRow(data) {
-			var $link = $('<a class="name" />')
-			.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
-			.text(data.name);
-			var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
-
-			if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
-
-			var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
-			.addClass('download').text('Download');
-			var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
-			var perms = [];
-
-			if(data.is_readable) perms.push('read');
-			if(data.is_writable) perms.push('write');
-			if(data.is_executable) perms.push('exec');
-
-			var $html = $('<tr />')
-			.addClass(data.is_dir ? 'is_dir' : '')
-			.append( $('<td class="first" />').append($link) )
-			.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
-			.html($('<span class="size" />').text(formatFileSize(data.size))) )
-			.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
-			.append( $('<td/>').text(perms.join('+')) )
-			.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
-			return $html;
-		}
+		// todo
+		var $link = $('<a class="name" />')
+		.attr('data-value', data.is_dir ? '#' : './' + data.path)
+		.text(data.name);
+		
+		if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+		if (!data.is_dir) $link.attr('onclick', "play(this)");
+		
+		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
+		
+		if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
+		
+		var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
+		.addClass('download').text('Download');
+		var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
+		var perms = [];
+		
+		if(data.is_readable) perms.push('read');
+		if(data.is_writable) perms.push('write');
+		if(data.is_executable) perms.push('exec');
+		
+		var $html = $('<tr />')
+		.addClass(data.is_dir ? 'is_dir' : '')
+		.append( $('<td class="first" />').append($link) )
+		.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
+		.html($('<span class="size" />').text(formatFileSize(data.size))) )
+		.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
+		.append( $('<td/>').text(perms.join('+')) )
+		.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
+		return $html;
+	}
 	
 	function renderBreadcrumbs(path) {
 		var base = "",

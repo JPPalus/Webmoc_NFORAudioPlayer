@@ -446,12 +446,7 @@ function get_absolute_path($path) {
 			.attr('data-value', data.is_dir ? '#' : './' + data.path)
 			.text(data.name);
 			if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
-<<<<<<< HEAD
 			if (!data.is_dir) $link.attr('onclick', "play(this)");
-=======
-			// $link.attr('href', '#' + encodeURIComponent(data.path));
-			$link.attr('onclick', "play(this)");
->>>>>>> c2950ef769a2800c7e7264f3b86c127c69b1e798
 
 			var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
 
@@ -508,30 +503,16 @@ function get_absolute_path($path) {
 
 	})
 
-<<<<<<< HEAD
 	function play(e) {
 
 		var audio = document.getElementById('audio_player');
 		var source = document.getElementById('audio_source');
 
-=======
-	$(".name").click(function() {
-		alert("Anchor Tag Click Event.");
-	});
-
-	function play(e) {
-
-		// var elm = e.target;
-		var audio = document.getElementById('audio_player');
-
-		var source = document.getElementById('audio_source');
->>>>>>> c2950ef769a2800c7e7264f3b86c127c69b1e798
 		source.src = e.getAttribute('data-value');
 
 		audio.load(); //call this to just preload the audio without playing
 		audio.play(); //call this to play the song right away
 
-<<<<<<< HEAD
 		// get filename
 		var text_field = document.getElementById('audio_data');
 		var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
@@ -541,9 +522,6 @@ function get_absolute_path($path) {
 		// get art
 	}
 
-=======
-	}
->>>>>>> c2950ef769a2800c7e7264f3b86c127c69b1e798
 	</script>
 
 	<head>
@@ -557,7 +535,6 @@ function get_absolute_path($path) {
 			<source id="audio_source" src=""> </source>
 		</audio>
 	</div>
-<<<<<<< HEAD
 	<div>
 		<textarea id="audio_data" row="1" cols="1"></textarea>
 		</div
@@ -580,24 +557,3 @@ function get_absolute_path($path) {
 			</div>
 			<footer></a></footer>
 		</body></html>
-=======
-
-
-	<body>
-		<div id="top">
-
-			<div id="breadcrumb">&nbsp;</div>
-		</div>
-
-		<table id="table"><thead><tr>
-			<th>Name</th>
-			<th>Size</th>
-			<th>Modified</th>
-			<th>Permissions</th>
-			<th>Actions</th>
-		</tr></thead><tbody id="list">
-
-		</tbody></table>
-		<footer></a></footer>
-	</body></html>
->>>>>>> c2950ef769a2800c7e7264f3b86c127c69b1e798

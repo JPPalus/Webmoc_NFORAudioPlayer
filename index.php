@@ -435,17 +435,6 @@ $(function(){
 		},'json');
 		return false;
 	});
-
-	$('#mkdir').submit(function(e) {
-			var hashval = decodeURIComponent(window.location.hash.substr(1)),
-			$dir = $(this).find('[name=name]');
-			e.preventDefault();
-			$dir.val().length && $.post('?',{'do':'mkdir',name:$dir.val(),xsrf:XSRF,file:hashval},function(data){
-				list();
-			},'json');
-			$dir.val('');
-			return false;
-		});
 	
 	function list() {
 		var hashval = window.location.hash.substr(1);
@@ -468,7 +457,8 @@ $(function(){
 	function renderFileRow(data) {
 		// todo
 		var $link = $('<a class="name" />')
-		.attr('data-value', data.is_dir ? '#' : './' + data.path)
+		// .attr('data-value', data.is_dir ? '#' : './' + data.path)
+		.attr('href', data.is_dir ? '#' + encodeURIComponent(data.path) : './' + data.path)
 		.text(data.name);
 		if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
 		if (!data.is_dir) $link.attr('onclick', "play(this)");

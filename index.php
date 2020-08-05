@@ -235,6 +235,10 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
 		return false;
 	}
 
+	if (fnmatch($entry, '.*')) {
+		return false;
+	}
+
 	if (is_dir($entry) && $allow_show_folders) {
 		return true;
 	}

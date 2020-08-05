@@ -105,7 +105,7 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 	}
 	
 	foreach($hidden_patterns as $pattern) {
-		if(fnmatch($pattern,$entry)) {
+		if(fnmatch($pattern, $entry)) {
 			return false;
 		}
 	}
@@ -120,7 +120,7 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 		}
 	}
 	
-	return true;
+	return false;
 }
 
 function get_absolute_path($path) {

@@ -449,7 +449,7 @@ $(function(){
 		.text(data.name);
 
 		
-		if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+		// if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
 		if (!data.is_dir) $link.attr('onclick', "play(this)");
 		
 		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;

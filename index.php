@@ -104,23 +104,23 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 		return false;
 	}
 
-	// foreach($hidden_patterns as $pattern) {
-	// 	if(fnmatch($pattern,$entry)) {
-	// 		return false;
-	// 	}
-	// }
+	foreach($hidden_patterns as $pattern) {
+		if(fnmatch($pattern,$entry)) {
+			return false;
+		}
+	}
 
 	if (is_dir($entry) && $allow_show_folders) {
 		return true;
 	}
 
-	foreach($allowed_patterns as $pattern) {
-		if(fnmatch($pattern,$entry)) {
-			return true;
-		}
-	}
+	// foreach($allowed_patterns as $pattern) {
+	// 	if(fnmatch($pattern,$entry)) {
+	// 		return true;
+	// 	}
+	// }
 
-	return false;
+	return true;
 }
 
 function get_absolute_path($path) {

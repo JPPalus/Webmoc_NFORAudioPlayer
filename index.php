@@ -238,6 +238,11 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns) {
 	if (is_dir($entry) && $allow_show_folders) {
 		return true;
 	}
+
+	if ($entry == '.*') {
+		return false;
+	}
+
 	// foreach($allowed_patterns as $pattern) {
 	// 	if(fnmatch($pattern,$entry)) {
 	// 		return true;

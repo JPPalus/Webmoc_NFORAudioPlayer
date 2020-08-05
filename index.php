@@ -104,11 +104,11 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 		return false;
 	}
 
-	foreach($hidden_patterns as $pattern) {
-		if(fnmatch($pattern,$entry)) {
-			return false;
-		}
-	}
+	// foreach($hidden_patterns as $pattern) {
+	// 	if(fnmatch($pattern,$entry)) {
+	// 		return false;
+	// 	}
+	// }
 
 	if (is_dir($entry) && $allow_show_folders) {
 		return true;
@@ -516,7 +516,7 @@ function play(e) {
 	var audio = document.getElementById('audio_player');
 	var source = document.getElementById('audio_source');
 
-	var date_type = e.getAttribute('data-type');
+	// var date_type = e.getAttribute('data-type');
 	source.src = e.getAttribute('data-value');
 	
 	// if audiofile
@@ -530,7 +530,7 @@ function play(e) {
 	filename.replace("/", "aAa");
 	text_field.value = filename;
 	
-	text_field.value = date_type;
+	// text_field.value = date_type;
 	// get art
 }
 

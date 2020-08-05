@@ -87,7 +87,7 @@ if($_GET['do'] == 'list') {
 	foreach($disallowed_patterns as $pattern)
 	if(fnmatch($pattern, $file))
 	err(403,"Files of this type are not allowed.");
-
+	
 	$filename = basename($file);
 	$finfo = finfo_open(FILEINFO_MIME_TYPE);
 	header('Content-Type: ' . finfo_file($finfo, $file));
@@ -103,23 +103,23 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 	if ($entry === basename(__FILE__)) {
 		return false;
 	}
-
+	
 	foreach($hidden_patterns as $pattern) {
 		if(fnmatch($pattern,$entry)) {
 			return false;
 		}
 	}
-
-	if (is_dir($entry) && $allow_show_folders) {
-		return true;
+	
+	if (is_dir($entry) && !$allow_show_folders) {
+		return false;
 	}
-
+	
 	foreach($allowed_patterns as $pattern) {
 		if(fnmatch($pattern, $entry)) {
 			return true;
 		}
 	}
-
+	
 	return false;
 }
 
@@ -515,14 +515,14 @@ function play(e) {
 	
 	var audio = document.getElementById('audio_player');
 	var source = document.getElementById('audio_source');
-
+	
 	// var date_type = e.getAttribute('data-type');
 	source.src = e.getAttribute('data-value');
 	
 	// if audiofile
 	audio.load(); //call this to just preload the audio without playing
 	audio.play(); //call this to play the song right away
-
+	
 	
 	// get filename
 	var text_field = document.getElementById('audio_data');

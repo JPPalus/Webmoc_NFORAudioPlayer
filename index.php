@@ -7,8 +7,8 @@ $allow_direct_link = true; // Set to false to only allow downloads and not direc
 $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
-$hidden_patterns = ['*.php','.*']; // Matching files hidden in directory index
-$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg', '*.mid']; // Matching files hidden in directory index
+$hidden_patterns = ['*.php','.*', 'playlist.m3u']; // Matching files hidden in directory index
+$allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg', '*.mid', '*.m3u']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
 
@@ -77,6 +77,20 @@ if($_GET['do'] == 'list') {
 			$f2_key = ($f2['is_dir']?:2) . $f2['name'];
 			return $f1_key > $f2_key;
 		});
+	//TODO
+	} elseif (is_file($file)) {
+		$result = [];
+		$stat = stat($file);
+		$result[] = [
+			'mtime' => $stat['mtime'],
+			'size' => $stat['size'],
+			'name' => basename($file),
+			'path' => preg_replace('@^\./@', '', $file),
+			'is_dir' => is_dir($file),
+			'is_readable' => is_readable($file),
+			'is_writable' => is_writable($file),
+			'is_executable' => is_executable($file),
+		];
 	} else {
 		err(412,"Not a Directory");
 	}
@@ -116,8 +130,8 @@ function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidde
 	}
 
 	foreach($allowed_patterns as $pattern) {
-	 	if(fnmatch($pattern, $entry)) {
-	 		return true;
+		if(fnmatch($pattern, $entry)) {
+			return true;
 		}
 	}
 
@@ -214,6 +228,7 @@ function get_absolute_path($path) {
 	}
 
 	#overlay {
+		pointer-events:none;
 		position: absolute;
 		top: 2px;
 		right: 20px;
@@ -326,6 +341,8 @@ function get_absolute_path($path) {
 		height:30px;
 		font-size:12px;
 		white-space: nowrap;
+		font-weight: bold;
+
 	}
 
 	td.first {
@@ -367,17 +384,39 @@ function get_absolute_path($path) {
 	}
 
 	.name {
-		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABFklEQVQ4jZXTPUoEQRCG4WeGxUg8gBjJYrSIdxAvYGAo4gE8gmAgi4iBiLmYGhiIgbggYmSmkZipLCYGYiTiTxnsLI7N7Kw2NDRUvR/VVV9lkhOMYxGzmMQHHnGK/YxuyvTBPFgNXoMYcN+C9aCRwo3goAZM71EwUhZoJwnvfxDZ7sPNCuAimA/uawQ+g5ZgqyJ4XoiPBps1Fe0KrisCZ0mPWkVVad6t4GWYQGlKy8FTKe81r5xpxcn4wpXEBznuhsHBWNH1S8yUQt0cnQomL0DBAm6wIjUQHcHUgDE2g5MhY5zul7iRBJ+HWDqCnfIfG8HhP6x8/MvKJZG16C1M3TK1o9SLrKLjE1jCnN6bn3Xey3go538DGkAuGZ0eLmUAAAAASUVORK5CYII=) no-repeat scroll 8px 15px;
+		/* background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABFklEQVQ4jZXTPUoEQRCG4WeGxUg8gBjJYrSIdxAvYGAo4gE8gmAgi4iBiLmYGhiIgbggYmSmkZipLCYGYiTiTxnsLI7N7Kw2NDRUvR/VVV9lkhOMYxGzmMQHHnGK/YxuyvTBPFgNXoMYcN+C9aCRwo3goAZM71EwUhZoJwnvfxDZ7sPNCuAimA/uawQ+g5ZgqyJ4XoiPBps1Fe0KrisCZ0mPWkVVad6t4GWYQGlKy8FTKe81r5xpxcn4wpXEBznuhsHBWNH1S8yUQt0cnQomL0DBAm6wIjUQHcHUgDE2g5MhY5zul7iRBJ+HWDqCnfIfG8HhP6x8/MvKJZG16C1M3TK1o9SLrKLjE1jCnN6bn3Xey3go538DGkAuGZ0eLmUAAAAASUVORK5CYII=) no-repeat scroll 8px 15px; */
+		/* background: url(../resources/play_red.png) no-repeat; */
+		background-position: 8px 15px;
+		background-size: 20px 20px;
+		padding: 15px 0 10px 40px;
+		color: GoldenRod;
+		font-weight: bold;
+	}
+
+	.is_playing {
+		background: url(../resources/play_green.png) no-repeat;
+		background-position: 8px 15px;
+		background-size: 20px 20px;
 		padding:15px 0 10px 40px;
 		color: GoldenRod;
 		font-weight: bold;
 	}
 
-	.is_dir .name {
+	.is_not_playing {
+		background: url(../resources/play_red.png) no-repeat;
+		background-position: 8px 15px;
+		background-size: 20px 20px;
+		padding:15px 0 10px 40px;
+		color: GoldenRod;
+		font-weight: bold;
+	}
+
+	.is_dir {
 		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAADdgAAA3YBfdWCzAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAI0SURBVFiF7Vctb1RRED1nZu5977VQVBEQBKZ1GCDBEwy+ISgCBsMPwOH4CUXgsKQOAxq5CaKChEBqShNK222327f79n0MgpRQ2qC2twKOGjE352TO3Jl76e44S8iZsgOww+Dhi/V3nePOsQRFv679/qsnV96ehgAeWvBged3vXi+OJewMW/Q+T8YCLr18fPnNqQq4fS0/MWlQdviwVqNpp9Mvs7l8Wn50aRH4zQIAqOruxANZAG4thKmQA8D7j5OFw/iIgLXvo6mR/B36K+LNp71vVd1cTMR8BFmwTesc88/uLQ5FKO4+k4aarbuPnq98mbdo2q70hmU0VREkEeCOtqrbMprmFqM1psoYAsg0U9EBtB0YozUWzWpVZQgBxMm3YPoCiLpxRrPaYrBKRSUL5qn2AgFU0koMVlkMOo6G2SIymQCAGE/AGHRsWbCRKc8VmaBN4wBIwkZkFmxkWZDSFCwyommZSABgCmZBSsuiHahA8kA2iZYzSapAsmgHlgfdVyGLTFg3iZqQhAqZB923GGUgQhYRVElmAUXIGGVgedQ9AJJnAkqyClCEkkfdM1Pt13VHdxDpnof0jgxB+mYqO5PaCSDRIAbgDgdpKjtmwm13irsnq4ATdKeYcNvUZAt0dg5NVwEQFKrJlpn45lwh/LpbWdela4K5QsXEN61tytWr81l5YSY/n4wdQH84qjd2J6vEz+W0BOAGgLlE/AMAPQCv6e4gmWYC/QF3d/7zf8P/An4AWL/T1+B2nyIAAAAASUVORK5CYII=) no-repeat scroll 0px 10px;
 		padding:15px 0 10px 40px;
 		color: GoldenRod;
 		font-weight: bold;
+		background-position: 5px 5px;
 	}
 
 	.download {
@@ -441,6 +480,21 @@ function get_absolute_path($path) {
 	}
 })(jQuery);
 
+function formatTimestamp(unix_timestamp) {
+	var m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	var d = new Date(unix_timestamp*1000);
+	return [m[d.getMonth()],' ',d.getDate(),', ',d.getFullYear()," ",
+	(d.getHours() % 12 || 12),":",(d.getMinutes() < 10 ? '0' : '')+d.getMinutes(),
+	" ",d.getHours() >= 12 ? 'PM' : 'AM'].join('');
+}
+
+function formatFileSize(bytes) {
+	var s = ['bytes', 'KB','MB','GB','TB','PB','EB'];
+	for(var pos = 0;bytes >= 1000; pos++,bytes /= 1024);
+	var d = Math.round(bytes*10);
+	return pos ? [parseInt(d/10),".",d%10," ",s[pos]].join('') : bytes + ' bytes';
+}
+
 $(function(){
 	var XSRF = (document.cookie.match('(^|; )_sfm_xsrf=([^;]*)')||0)[2];
 	var $tbody = $('#list');
@@ -456,14 +510,19 @@ $(function(){
 
 	function list() {
 		var hashval = window.location.hash.substr(1);
-		$.get('?do=list&file='+ hashval,function(data) {
+		// TODO faire ca correctement
+		if(hashval.split('.').pop() == 'm3u') hashval = '99_luftballons.mp3';
+		alert(hashval);
+		$.get('?do=list&file='+ hashval, function(data) {
+			// TODO
+			console.log(data);
 			$tbody.empty();
 			$('#breadcrumb').empty().html(renderBreadcrumbs(hashval));
 			if(data.success) {
 				$.each(data.results,function(k,v){
 					$tbody.append(renderFileRow(v));
 				});
-				!data.results.length && $tbody.append('<tr><td class="empty" colspan=5>This folder is empty</td></tr>')
+				!data.results.length && $tbody.append('<tr><td class="empty" colspan=6>This folder is empty</td></tr>')
 				data.is_writable ? $('body').removeClass('no_write') : $('body').addClass('no_write');
 			} else {
 				console.warn(data.error.msg);
@@ -473,14 +532,16 @@ $(function(){
 	}
 
 	function renderFileRow(data) {
-		// todo
 		var $link = $('<a class="name" />')
 		.attr('data-value', data.is_dir ? '#' : './' + data.path)
 		.text(data.name);
 
 		if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+		if (data.is_dir) $link.attr('data-type', 'folder');
+		if (!data.is_dir) $link.addClass("is_not_playing");
 		if (!data.is_dir) $link.attr('data-type', data.path.split('.').pop());
 		if (!data.is_dir) $link.attr('onclick', "play(this)");
+		if ($link.attr('data-type') == 'm3u') $link.attr('href', '#' + data.name);
 
 		var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
 
@@ -498,6 +559,7 @@ $(function(){
 		var $html = $('<tr />')
 		.addClass(data.is_dir ? 'is_dir' : '')
 		.append( $('<td class="first" />').append($link) )
+		.append( $('<td/>').attr('data-sort', 'bli').text('bli') )
 		.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
 		.html($('<span class="size" />').text(formatFileSize(data.size))) )
 		.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
@@ -508,7 +570,7 @@ $(function(){
 
 	function renderBreadcrumbs(path) {
 		var base = "",
-		$html = $('<div/>').append( $('<a href=#><img class="aquila" src="../resources/aquila.png"></a></div>') );
+		$html = $('<div/ id="breadcrumb_div">').append( $('<a href=#><img class="aquila" src="../resources/aquila.png"></a></div>') );
 		$.each(path.split('%2F'),function(k,v){
 			if(v) {
 				var v_as_text = decodeURIComponent(v);
@@ -520,26 +582,11 @@ $(function(){
 		return $html;
 	}
 
-	function formatTimestamp(unix_timestamp) {
-		var m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-		var d = new Date(unix_timestamp*1000);
-		return [m[d.getMonth()],' ',d.getDate(),', ',d.getFullYear()," ",
-		(d.getHours() % 12 || 12),":",(d.getMinutes() < 10 ? '0' : '')+d.getMinutes(),
-		" ",d.getHours() >= 12 ? 'PM' : 'AM'].join('');
-	}
-
-	function formatFileSize(bytes) {
-		var s = ['bytes', 'KB','MB','GB','TB','PB','EB'];
-		for(var pos = 0;bytes >= 1000; pos++,bytes /= 1024);
-		var d = Math.round(bytes*10);
-		return pos ? [parseInt(d/10),".",d%10," ",s[pos]].join('') : bytes + ' bytes';
-	}
-
 })
 
 String.prototype.replaceAll = function(str1, str2, ignore)
 {
-    return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+	return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
 }
 
 function append_text(string_to_append, text_area) {
@@ -554,12 +601,183 @@ function display_time(ev) {
 	var last_time = 0;
 
 	if(ev.time <= parseFloat(text_box.duration)) {
-		text_box.innerHTML = 'Duration: ' + text_box.duration + ' s \n' + ev.time.toFixed(3) + ' s';
+
+		text_box.value = 'Duration: ' + text_box.duration + ' s \n' + ev.time.toFixed(3) + ' s';
 		last_time = ev.time;
 	} else {
-		text_box.innerHTML = 'Duration: ' + text_box.duration + ' s \n' + text_box.duration + ' s';
+		text_box.value = 'Duration: ' + text_box.duration + ' s \n' + text_box.duration + ' s';
 	}
-};
+}
+
+function is_playing_change_state() {
+	var is_playing = document.querySelectorAll('.is_playing');
+	for(i = 0; i < is_playing.length; i++) {
+		is_playing[i].classList.add('is_not_playing');
+		is_playing[i].classList.remove('is_playing');
+	}
+}
+
+// function renderFileRow(data) {
+// 	var $link = $('<a class="name" />')
+// 	.attr('data-value', data.is_dir ? '#' : './' + data.path)
+// 	.text(data.name);
+//
+// 	$link.addClass("is_not_playing");
+// 	if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
+// 	if (data.is_dir) $link.attr('data-type', 'folder');
+// 	if (!data.is_dir) $link.attr('data-type', data.path.split('.').pop());
+// 	if (!data.is_dir) $link.attr('onclick', "play(this)");
+//
+// 	var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
+//
+// 	if (!data.is_dir && !allow_direct_link)  $link.css('pointer-events','none');
+//
+// 	var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(data.path))
+// 	.addClass('download').text('Download');
+// 	var $delete_link = $('<a href="#" />').attr('data-file',data.path).addClass('delete').text('delete');
+// 	var perms = [];
+//
+// 	if(data.is_readable) perms.push('read');
+// 	if(data.is_writable) perms.push('write');
+// 	if(data.is_executable) perms.push('exec');
+//
+// 	var $html = $('<tr />')
+// 	.addClass(data.is_dir ? 'is_dir' : '')
+// 	.append( $('<td class="first" />').append($link) )
+// 	.append( $('<td/>').attr('data-sort',data.is_dir ? -1 : data.size)
+// 	.html($('<span class="size" />').text(formatFileSize(data.size))) )
+// 	.append( $('<td/>').attr('data-sort',data.mtime).text(formatTimestamp(data.mtime)) )
+// 	.append( $('<td/>').text(perms.join('+')) )
+// 	.append( $('<td/>').append($dl_link).append( data.is_deleteable ? $delete_link : '') )
+// 	return $html;
+// }
+
+function play_playlist(playlist_path, text_data, player, source) {
+	// var req = new XMLHttpRequest();
+	// req.open("GET", playlist_path, false);
+	// req.send();
+	//
+	// var playlist = req.responseText.split('\n');
+	// var playlist_name = playlist_path.replace(/.*\//, '');
+
+	// $('#breadcrumb_div').append($('<span/>').text(' ▸ '));
+	// $('#breadcrumb_div').append( $('<a/>').text(playlist_name));
+	//
+	// // render
+	// var filepath = '.' + playlist[0].split("https://malekith.fr/VoxCasterPublicae").pop();
+	//
+	// $('#list').empty();
+	// var $link = $('<a class="name" />');
+	// $link.attr('data-value', filepath);
+	// $link.text(playlist[0].split(/[\\/]/).pop());
+	// $link.addClass("is_not_playing");
+	// $link.attr('onclick', "play(this)");
+	//
+	// var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
+	// if (!allow_direct_link)  $link.css('pointer-events','none');
+	//
+	// var $dl_link = $('<a/>').attr('href','?do=download&file='+ encodeURIComponent(filepath));
+	// $dl_link.addClass('download').text('Download');
+	//
+	// var perms = [];
+	//
+	// var $html = $('<tr />');
+	// .append( $('<td class="first" />').append(filepath) )
+	// .append( $('<td/>').attr('data-sort', -1) )
+	// .html($('<span class="size" />').text(formatFileSize(0))) )
+	// .append( $('<td/>').attr('data-sort', -1).text(formatTimestamp(0)) )
+	// .append( $('<td/>').text(perms.join('+')) )
+	// .append( $('<td/>').append(filepath).append('') )
+
+	// $('#list').append($html);
+
+	// for(i = 0; i < playlist.length; i++) {
+	// 	text_data.value += '\n' + playlist[i];
+		// 		if(playlist[i] == '*.mp3') {
+		// 			source.src = playlist[i];
+		// 			text_data.value = playlist[i];
+		// 			player.load();
+		// 			player.play();
+	// }
+}
+
+// play next song
+function play_next() {
+	random = false;
+	// get context
+	var player = document.getElementById('audio_player');
+	var source = document.getElementById('audio_source');
+	var text_field = document.getElementById('audio_info');
+	var text_data = document.getElementById('audio_data')
+
+	var file_path = source.src;
+	var folder = file_path.match(/(.*)[\/\\]/)[1]||'';
+
+	// ./path/playlist.m3u holds the list of songs to play
+	var req = new XMLHttpRequest();
+	req.open("GET", folder + '/playlist.m3u', false);
+	req.send();
+
+	var playlist = req.responseText.split('\n');
+	var index_of_source_in_playlist = playlist.indexOf(file_path) ;
+
+	// song to play :
+	if((index_of_source_in_playlist + 2) < playlist.length) {
+		source.src = playlist[index_of_source_in_playlist + 1];
+		var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+		filename = "Home" + filename.replaceAll('/', " \u25B8 ");
+		text_field.value = filename;
+
+		// set the correct icon
+		is_playing_change_state();
+
+		var next_playing = document.querySelectorAll(".is_not_playing");
+		for(i = 0; i < next_playing.length; i++) {
+			if(next_playing[i].getAttribute('data-type') != 'folder') {
+				if(next_playing[i].getAttribute('data-type') != 'm3u') {
+					if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[index_of_source_in_playlist + 1])) {
+						next_playing[i].classList.add('is_playing');
+						next_playing[i].classList.remove('is_not_playing');
+					}
+				}
+			}
+		}
+		// pause the former song and load the next one
+		player.pause();
+		player.load();
+		player.play();
+	}
+	// loop back
+	else {
+		source.src = playlist[0];
+		var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+		filename = "Home" + filename.replaceAll('/', " \u25B8 ");
+		text_field.value = filename;
+
+		// set the correct icon
+		is_playing_change_state();
+
+		var next_playing = document.querySelectorAll('.is_not_playing');
+		for(i = 0; i < next_playing.length; i++) {
+			if(next_playing[i].getAttribute('data-type') != 'folder') {
+				if(next_playing[i].getAttribute('data-type') != 'm3u') {
+					if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[0])) {
+						next_playing[i].classList.add('is_playing');
+						next_playing[i].classList.remove('is_not_playing');
+					}
+				}
+			}
+		}
+
+		// pause the former song and load the next one
+		player.pause();
+		player.load();
+		player.play();
+	}
+
+	// TODO : Random, autoplay, loop, afficher next song dans audio_data
+}
+
 
 // play music on click
 function play(e) {
@@ -572,28 +790,38 @@ function play(e) {
 	var date_type = e.getAttribute('data-type');
 	var file_path = e.getAttribute('data-value');
 
-	source.src = file_path;
+	is_playing_change_state();
+	e.classList.add('is_playing');
+	e.classList.remove('is_not_playing');
+
+	midi_stop();
+	text_data.value = "";
 
 	// format the texbox
-	var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
-	filename = "Home" + filename.replaceAll('/', " \u25B8 ");
+	var filename = e.innerHTML;
+	filename = "Home" + " \u25B8 " + filename;
 	text_field.value = filename;
 
-	// if audiofile
-	if(date_type != "mid") {
-		player.load(); //call this to just preload the audio without playing
-		player.play(); //call this to play the song right away
+	if(date_type == "m3u") {
+		player.pause();
+		play_playlist(file_path, text_data, player, source);
 	}
 
 	if(date_type == "mid") {
-
+		player.pause();
 		libMIDI.player_callback = display_time;
 
+		// on stock la durée dans un attribut comme un gros sauvage
 		text_data.setAttribute("duration", "");
 		libMIDI.get_duration(file_path, function(seconds) { document.getElementById('audio_data').duration = seconds.toFixed(3);} );
 
 		libMIDI.play(file_path);
+	}
 
+	else {
+		source.src = file_path;
+		player.load(); //call this to just preload the audio without playing
+		player.play(); //call this to play the song right away
 	}
 }
 
@@ -614,14 +842,13 @@ function midi_stop() {
 
 </script>
 
-
 <head>
 	<link rel="icon" type="image/png" sizes="32x32" href="../resources/voxcast-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="../resources/voxcast-16x16.png">
 </head>
 
 <div>
-	<audio id="audio_player" controls>
+	<audio id="audio_player" onended="play_next()" controls>
 		<source id="audio_source" src=""> </source>
 	</audio>
 </div>
@@ -636,9 +863,9 @@ function midi_stop() {
 </div>
 
 <div id="midi_player">
-	 <button type="button" id="midi_resume" onclick="midi_resume()">&#9654</button>
-	 <button type="button" id="midi_pause" onclick="midi_pause()">&#8214</button>
-	 <button type="button" id="midi_stop" onclick="midi_stop()">&#9209</button>
+	<button type="button" id="midi_resume" onclick="midi_resume()">&#9654</button>
+	<button type="button" id="midi_pause" onclick="midi_pause()">&#8214</button>
+	<button type="button" id="midi_stop" onclick="midi_stop()">&#9209</button>
 </div>
 
 <body>
@@ -647,15 +874,24 @@ function midi_stop() {
 	</div>
 
 	<div id="mid">
-		<table id="table"><thead><tr>
-			<th>Name</th>
-			<th>Size</th>
-			<th>Modified</th>
-			<th>Permissions</th>
-			<th>Actions</th>
-		</tr></thead><tbody id="list">
+		<table id="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Duration</th>
+					<th>Size</th>
+					<th>Modified</th>
+					<th>Permissions</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody id="list">
 
-		</tbody></table>
+			</tbody>
+		</table>
 	</div>
-	<footer></a></footer>
-</body></html>
+	<footer>
+		<a></a>
+	</footer>
+</body>
+</html>

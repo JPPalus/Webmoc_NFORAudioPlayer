@@ -13,4 +13,4 @@ The `.php` file is a self-sufficient drop-in of the project.
 * ~~Afficher les métadonnées.~~
 * ~~Album art.~~
 * ~~Gérer le MIDI~~.
-* Ajouter la duration dans le tableau.
+* ~~Ajouter la duration dans le tableau~~.

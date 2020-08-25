@@ -304,14 +304,103 @@ function get_absolute_path($path) {
 		float:left;
 	}
 
+	#audio_block {
+		position: absolute;
+	}
+
 	/* firefox only */
 	#audio_player {
+		visibility: hidden;
+		position: absolute;
 		background-color: Gold;
 		width: 50%;
 		border-right: 2px inset #484015;
 	}
 
+	#midi_player {
+		position: absolute ;
+		background-color: #484015;
+		height: 39px;
+		width: 50%;
+
+		border-right: 2px inset #484015;
+	}
+
+	#midi_progressbar {
+		margin-left: 60px;
+		margin-right: 120px;
+		top : 18px;
+	  background: rgba(255,255,255,0.1);
+	  justify-content: flex-start;
+	  border-radius: 10px;
+	  align-items: center;
+	  position: relative;
+	  height: 5px;
+	}
+
+	#bar {
+		top : 0px;
+	  background: DeepSkyBlue;
+	  justify-content: flex-start;
+	  border-radius: 10px;
+	  align-items: center;
+	  position: relative;
+	  height: 5px;
+		width: 0%;
+	}
+
+#midi_bar_ball {
+		position: absolute;
+		float: right;
+		right: -5px;
+		top: -4px;
+	  height: 13px;
+	  width: 13px;
+	  background-color: FloralWhite;
+	  border-radius: 50%;
+	  display: inline-block;
+}
+
+#midi_player_time {
+		position: absolute;
+		right: 10px;
+		top: 10px;
+		background-color: #484015;
+
+		height: 20px;
+		width: 90px;
+		resize: none;
+		font-family: "lucida grande", "Segoe UI", Arial, sans-serif;
+		font-size: 14px;
+
+		font-weight: bold;
+		color: FloralWhite;
+	}
+
+	#midi_play {
+		position: absolute;
+		left: 13px;
+		top: 6px;
+		width: 28px;
+	}
+
+	#midi_pause {
+		visibility: hidden;
+		position: absolute;
+		left: 16px;
+		top: 8px;
+		width: 23px;
+	}
+
+	#buttons_raw {
+		position: absolute;
+		top: 80px;
+	}
+
 	#audio_info {
+		position: absolute;
+		top: 55px;
+
 		resize: none;
 		font-family: "lucida grande", "Segoe UI", Arial, sans-serif;
 		font-size: 14px;
@@ -556,6 +645,15 @@ function get_absolute_path($path) {
 
 <script>
 
+function formatTime(seconds) {
+		return [
+				parseInt(seconds / 60 % 60),
+				parseInt(seconds % 60)
+		]
+				.join(":")
+				.replace(/\b(\d)\b/g, "0$1")
+}
+
 function formatTimestamp(unix_timestamp) {
 	var m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	var d = new Date(unix_timestamp*1000);
@@ -623,7 +721,7 @@ function parse_playlist(playlist) {
 					//TODO if file = playlist
 				}
 				else if (filepath.split('.')[2] == 'mid') {
-					libMIDI.get_duration(filepath, function(seconds) { row.innerHTML = seconds.toFixed(2) + ' s';} );
+					libMIDI.get_duration(filepath, function(seconds) { row.innerHTML = formatTime(seconds.toFixed(0)).replace(":", " : ");} );
 				} else {
 					$.get("index.php?get_audio_technical_data&track=" + filepath.replace(/&/g, '%26').replace(/ /g, '%20'), function(data) { get_duration_from_data(data, i) });
 				}
@@ -742,14 +840,24 @@ function parse_playlist(playlist) {
 	}
 
 	function display_time(ev) {
-		var text_box = document.getElementById('audio_data_1');
+		var midi_player_time = document.getElementById('midi_player_time');
+		var bar = document.getElementById('bar');
+		var duration = formatTime(midi_player_time.duration);
 		var last_time = 0;
+		var ended = false;
 
-		if(ev.time <= parseFloat(text_box.duration)) {
-			text_box.innerHTML = '<br /> <br /> Duration: ' + text_box.duration + ' s <br /> ' + ev.time.toFixed(3) + ' s';
+		if(ev.time <= parseFloat(midi_player_time.duration)) {
+			var time = formatTime(ev.time.toFixed(0)) || 0.0;
+
+			midi_player_time.innerHTML = time + '<a style="color:grey;"> / ' + duration + '</a>';
 			last_time = ev.time;
+
+			var bar_width = String(ev.time / midi_player_time.duration * 100) + '%';
+			bar.style.width = bar_width;
+
+			if(time == duration) ended = true;
 		} else {
-			text_box.innerHTML = '<br /> <br /> Duration: ' + text_box.duration + ' s <br /> ' + text_box.duration + ' s';
+			midi_player_time.innerHTML = '00:00<a style="color:grey;"> / 00:00</a>';
 		}
 	}
 
@@ -1000,9 +1108,8 @@ function parse_playlist(playlist) {
 
 					// random not in playlist
 					if (random) {
-						var playables = get_list_playables_in_dir(file_dir_location, playlist);
 
-						var randomly_picked_track = playables[Math.floor(Math.random()*playables.length)];
+						var randomly_picked_track = playlist[Math.floor(Math.random()*playlist.length)];
 						source.src = randomly_picked_track;
 
 						var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
@@ -1176,16 +1283,25 @@ function parse_playlist(playlist) {
 			var text_field = document.getElementById('audio_info');
 			var text_data_1 = document.getElementById('audio_data_1');
 			var text_data_2 = document.getElementById('audio_data_2');
+			var midi_player_time = document.getElementById('midi_player_time');
 			var cog = document.getElementById('cog');
 
 			var date_type = e.getAttribute('data-type');
 			var file_path = decodeURIComponent(e.getAttribute('data-value'));
 
 			if (e.classList.contains('is_playing')) {
-				if (player.paused) {
-					player.play();
+				if(date_type == "mid") {
+					if(document.getElementById('midi_play').style.visibility == 'hidden') {
+						midi_pause();
+					} else {
+						midi_resume();
+					}
 				} else {
-					player.pause();
+					if (player.paused) {
+						player.play();
+					} else {
+						player.pause();
+					}
 				}
 			} else {
 				text_data_1.style.visibility = 'hidden';
@@ -1207,21 +1323,31 @@ function parse_playlist(playlist) {
 				text_field.value = filename;
 
 				if(date_type == "mid") {
+					player.style.visibility = 'hidden';
+					document.getElementById('midi_player').style.visibility = 'visible';
+
 					text_data_1.innerHTML = '';
-					text_data_1.style.visibility = 'visible';
+					text_data_1.style.visibility = 'hidden';
 
 					player.pause();
 					libMIDI.player_callback = display_time;
 
 					// on stock la durée dans un attribut comme un gros sauvage
-					text_data_1.setAttribute("duration", "");
-					libMIDI.get_duration(file_path, function(seconds) { document.getElementById('audio_data_1').duration = seconds.toFixed(3);} );
+					midi_player_time.setAttribute("duration", "");
+					libMIDI.get_duration(file_path, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+					document.getElementById('midi_play').style.visibility = 'hidden';
+					document.getElementById('midi_pause').style.visibility = 'visible';
 
 					libMIDI.play(file_path);
 					cog.classList.add("glow");
 				}
 
 				else {
+					player.style.visibility = 'visible';
+					document.getElementById('midi_player').style.visibility = 'hidden';
+					document.getElementById('midi_play').style.visibility = 'hidden';
+					document.getElementById('midi_pause').style.visibility = 'visible';
 
 					source.src = file_path;
 					player.load(); //call this to just preload the audio without playing
@@ -1243,6 +1369,9 @@ function parse_playlist(playlist) {
 			libMIDI.resume(file_path);
 			var cog = document.getElementById('cog');
 			cog.classList.add("glow");
+
+			document.getElementById('midi_play').style.visibility = 'hidden';
+			document.getElementById('midi_pause').style.visibility = 'visible';
 		}
 
 		function midi_pause() {
@@ -1250,6 +1379,9 @@ function parse_playlist(playlist) {
 			libMIDI.pause(file_path);
 			var cog = document.getElementById('cog');
 			cog.classList.remove("glow");
+
+			document.getElementById('midi_play').style.visibility = 'visible';
+			document.getElementById('midi_pause').style.visibility = 'hidden';
 		}
 
 		function midi_stop() {
@@ -1269,6 +1401,22 @@ function parse_playlist(playlist) {
 			cog.classList.add("glow");
 		}
 
+		function midi_play_color_blue(e) {
+			e.setAttribute("src", "../resources/midi_player_play.png");
+		}
+
+		function midi_play_color_white(e) {
+			e.setAttribute("src", "../resources/midi_player_play_white.png");
+		}
+
+		function midi_pause_color_blue(e) {
+			e.setAttribute("src", "../resources/midi_player_pause.png");
+		}
+
+		function midi_pause_color_white(e) {
+			e.setAttribute("src", "../resources/midi_player_pause_white.png");
+		}
+
 		</script>
 
 		<head>
@@ -1276,15 +1424,18 @@ function parse_playlist(playlist) {
 			<link rel="icon" type="image/png" sizes="16x16" href="../resources/voxcast-16x16.png">
 		</head>
 
-		<div>
-			<audio id="audio_player" onended="play_next()" onpause="cog_unglow()" onplaying="cog_glow()" controls>
-				<source id="audio_source" src="init"> </source>
-			</audio>
+		<div id="midi_player">
+			<image id="midi_play" src="../resources/midi_player_play_white.png" onclick="midi_resume()"  onmouseover="midi_play_color_blue(this)" onmouseout ="midi_play_color_white(this)"></image>
+			<image id="midi_pause" src="../resources/midi_player_pause_white.png" onclick="midi_pause()"  onmouseover="midi_pause_color_blue(this)" onmouseout ="midi_pause_color_white(this)"></image>
+			<div id="midi_progressbar"><div id="bar"><span id="midi_bar_ball"></span></div></div>
+			<div id="midi_player_time" >00:00<a style="color:grey;"> / 00:00</a></div>
 		</div>
 
-		<div>
-			<textarea id="audio_info" row="1" cols="1"></textarea>
-		</div>
+		<audio id="audio_player" onended="play_next()" onpause="cog_unglow()" onplaying="cog_glow()" controls>
+				<source id="audio_source" src="init"> </source>
+		</audio>
+
+		<textarea id="audio_info" row="1" cols="1"></textarea>
 
 		<div id="data_display">
 			<a id="audio_data">
@@ -1296,10 +1447,7 @@ function parse_playlist(playlist) {
 			<img id="overlay" src="../resources/overlay.png">
 		</div>
 
-		<div id="midi_player">
-			<button type="button" id="midi_resume" onclick="midi_resume()">&#9654</button>
-			<button type="button" id="midi_pause" onclick="midi_pause()">&#8214</button>
-			<button type="button" id="midi_stop" onclick="midi_stop()">&#9209</button>
+		<div id="buttons_raw">
 			<button type="button" id="play_next" onclick="play_next(true)">next</button>
 			<input type="checkbox" id="is_autoplay" name="is_autoplay" value="true">autoplay</input>
 			<input type="checkbox" id="is_loop" name="is_loop" value="true">loop</input>

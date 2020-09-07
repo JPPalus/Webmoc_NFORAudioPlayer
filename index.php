@@ -288,11 +288,21 @@ function get_absolute_path($path) {
 		color: GoldenRod;
 	}
 
+	-webkit-scrollbar {
+  	/* display: none; */
+	}
+
 	#mid {
 		position: absolute;
 		left: 15px;
 		right: 15px;
 		top: 280px;
+		/* display: block; */
+		height: 70%;
+		overflow-y: auto;
+		overflow-x: auto;
+		scrollbar-width: thin;
+		scrollbar-color: #4f420f #222222;
 	}
 
 	#breadcrumb {
@@ -364,11 +374,12 @@ function get_absolute_path($path) {
 #midi_player_time {
 		position: absolute;
 		right: 10px;
-		top: 10px;
+		/* top: 10px; */
+		top: 12px;
 		background-color: #484015;
 
 		height: 20px;
-		width: 90px;
+		/* width: 90px; */
 		resize: none;
 		font-family: "lucida grande", "Segoe UI", Arial, sans-serif;
 		font-size: 14px;
@@ -394,7 +405,21 @@ function get_absolute_path($path) {
 
 	#buttons_raw {
 		position: absolute;
-		top: 80px;
+		top: 79px;
+		background-color: #222222;
+		width: 50%;
+
+		border-right: 2px solid #222222;
+	}
+
+	#checkbox_raw {
+		/* position: absolute; */
+		float: right;
+		/* top: 79px; */
+		background-color: #222222;
+		/* width: 250px; */
+
+		border-right: 2px solid #222222;
 	}
 
 	#audio_info {
@@ -415,8 +440,103 @@ function get_absolute_path($path) {
 		border-right: 0px inset DarkRed;
 	}
 
-	#audio_data {
+	#speed {
+		pointer-events:none;
+		position: absolute;
+
+		top: 14px;
+		left: 50%;
+		padding-left: 20px;
+		height: 39px;
+	}
+
+	#speed_data {
+		cursor: text;
 		resize: none;
+
+		font-family: "lucida grande", "Segoe UI", Arial, sans-serif;
+		font-size: 7px;
+		text-align: center;
+
+		position: absolute;
+		top: 42px;
+		left: 50%;
+		margin-left: 22px;
+		height: 10px;
+		width: 20px;
+		overflow-x: hidden;
+		overflow-y: hidden;
+
+		background-color: #222222;
+		font-weight: bold;
+		color: GoldenRod;
+	}
+
+	#play_next {
+		/* position: absolute; */
+		top: 10px;
+		 /* left: 20px; */
+		height: 20px;
+		padding-right: 20px;
+		margin-top: 5px;
+	}
+
+	#backward {
+		/* position: absolute; */
+		top: 10px;
+		 /* left: 20px; */
+		height: 20px;
+		padding-right: 10px;
+	}
+
+	#forward {
+		/* position: absolute; */
+		top: 10px;
+		 /* left: 20px; */
+		height: 20px;
+		padding-right: 20px;
+	}
+
+	#speedm {
+		/* position: absolute; */
+		top: 10px;
+		 /* left: 20px; */
+		height: 20px;
+		padding-right: 10px;
+	}
+
+	#speed_normal {
+		/* position: absolute; */
+		top: 10px;
+		 /* left: 20px; */
+		height: 20px;
+		padding-right: 10px;
+	}
+
+	#speedp {
+		/* position: absolute; */
+		top: 10px;
+		 /* left: 20px; */
+		height: 20px;
+		padding-right: 40px;
+	}
+
+	#is_autoplay {
+		/* float: right; */
+	}
+
+	#is_loop {
+		/* float: right; */
+	}
+
+	#is_random {
+		/* float: right; */
+	}
+
+	#audio_data {
+		cursor: text;
+		resize: none;
+
 		font-family: "lucida grande", "Segoe UI", Arial, sans-serif;
 		font-size: 14px;
 
@@ -434,8 +554,7 @@ function get_absolute_path($path) {
 		color: FloralWhite;
 	}
 
-	#audio_data_2,  #audio_data_1 {
-		visibility: hidden;
+	#audio_data_2,  #audio_data_1, #audio_data_3 {
 		resize: none;
 		font-family: "lucida grande", "Segoe UI", Arial, sans-serif;
 		font-size: 14px;
@@ -448,16 +567,25 @@ function get_absolute_path($path) {
 	}
 
 	#audio_data_1 {
+		visibility: hidden;
 		border-bottom: 3px inset DarkRed;
-		border-top: 3px inset DarkRed;
 		border-right: 3px inset DarkRed;
 		border-left: 3px inset DarkRed;
 	}
 
 	#audio_data_2 {
+		visibility: hidden;
 		border-right: 3px inset DarkRed;
 		border-left: 3px inset DarkRed;
 		border-bottom: 3px inset DarkRed;
+	}
+
+	#audio_data_3 {
+		visibility: hidden;
+		border-bottom: 3px inset DarkRed;
+		border-top: 3px inset DarkRed;
+		border-right: 3px inset DarkRed;
+		border-left: 3px inset DarkRed;
 	}
 
 	#folder_actions {
@@ -605,12 +733,38 @@ function get_absolute_path($path) {
 		font-weight: bold;
 	}
 
+	#skull {
+		pointer-events:none;
+		position: absolute;
+		font-size: 8px;
+		color: #0e8505;
+
+		left: 50%;
+		padding-left: 24px;
+		top: 24px;
+	}
+
+	.glow_green {
+		-webkit-animation: glow_green 1.5s ease-in-out infinite alternate;
+		-moz-animation: glow_green 1.5s ease-in-out infinite alternate;
+		animation: glow_green 1.5s ease-in-out infinite alternate;
+	}
+
+	@-webkit-keyframes glow_green {
+		from {
+			text-shadow: 0 0 0 #fff, 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #fff, 0 0 50px #fff, 0 0 60px #fff, 0 0 70px #fff, 0 0 90px #fff;
+		}
+		to {
+			text-shadow: 0 0 0 #f5f5f5, 0 0 10px #f5f5f5,0 0 20px #f5f5f5, 0 0 30px #f5f5f5, 0 0 40px #f5f5f5, 0 0 50px #f5f5f5, 0 0 60px #f5f5f5, 0 0 70px #f5f5f5, 0 0 90px #f5f5f5;
+		}
+	}
+
 	#cog {
 		pointer-events:none;
 		position: absolute;
-		top: 2px;
-		right: 166px;
-		font-size: 55px;
+		top: 13px;
+		right: 168px;
+		font-size: 45px;
 		color: #05fa67;
 		text-align: center;
 	}
@@ -623,10 +777,10 @@ function get_absolute_path($path) {
 
 	@-webkit-keyframes glow {
 		from {
-			text-shadow: 0 0 0 #ff1414, 0 0 10px #ff1414, 0 0 20px #ff1414, 0 0 30px #ff1414, 0 0 40px #ff1414, 0 0 50px #ff1414, 0 0 60px #ff1414, 0 0 70px #ff1414;
+			text-shadow: 0 0 0 #ff1414, 0 0 10px #ff1414, 0 0 20px #ff1414, 0 0 30px #ff1414, 0 0 40px #ff1414, 0 0 50px #ff1414, 0 0 60px #ff1414, 0 0 70px #ff1414, 0 0 90px #ff1414;
 		}
 		to {
-			text-shadow: 0 0 0 #7d0909, 0 0 10px #7d0909,0 0 20px #7d0909, 0 0 30px #7d0909, 0 0 40px #7d0909, 0 0 50px #7d0909, 0 0 60px #7d0909, 0 0 70px #7d0909;
+			text-shadow: 0 0 0 #7d0909, 0 0 10px #7d0909,0 0 20px #7d0909, 0 0 30px #7d0909, 0 0 40px #7d0909, 0 0 50px #7d0909, 0 0 60px #7d0909, 0 0 70px #7d0909, 0 0 90px #7d0909;
 		}
 	}
 
@@ -765,7 +919,6 @@ function parse_playlist(playlist) {
 					} else {
 						console.warn(data.error.msg);
 					}
-					// $('#table').retablesort();
 				},'json');
 			}
 		}
@@ -778,7 +931,6 @@ function parse_playlist(playlist) {
 			if (data.is_dir) $link.addClass("is_dir");
 			if (data.is_dir) $link.attr('href', '#' + encodeURIComponent(data.path));
 			if (data.is_dir) $link.attr('data-type', 'folder');
-			if (!data.is_dir) $link.addClass("is_not_playing");
 			if (!data.is_dir) $link.attr('data-type', data.path.split('.').pop());
 			if (!data.is_dir && ($link.attr('data-type') != 'm3u')) $link.attr('art', "index.php?get_album_art&track=" + "./" + data.path);
 			if (!data.is_dir && ($link.attr('data-type') != 'm3u')) $link.attr('onclick', "play(this)");
@@ -786,6 +938,13 @@ function parse_playlist(playlist) {
 			if ($link.attr('data-type') == 'm3u') $link.text(data.name.replace('.m3u', ""));
 			if ($link.attr('data-type') == 'm3u') $link.addClass("playlist");
 
+			if (!data.is_dir) {
+				if("https://malekith.fr/VoxCasterPublicae/" + data.path == document.getElementById('audio_source').src) {
+					$link.addClass("is_playing");
+				} else {
+					$link.addClass("is_not_playing");
+				}
+			}
 
 			var allow_direct_link = <?php echo $allow_direct_link?'true':'false'; ?>;
 
@@ -844,7 +1003,6 @@ function parse_playlist(playlist) {
 		var bar = document.getElementById('bar');
 		var duration = formatTime(midi_player_time.duration);
 		var last_time = 0;
-		var ended = false;
 
 		if(ev.time <= parseFloat(midi_player_time.duration)) {
 			var time = formatTime(ev.time.toFixed(0)) || 0.0;
@@ -854,8 +1012,13 @@ function parse_playlist(playlist) {
 
 			var bar_width = String(ev.time / midi_player_time.duration * 100) + '%';
 			bar.style.width = bar_width;
+			if(time == duration) bar.setAttribute("ended", "true");
 
-			if(time == duration) ended = true;
+		} else if (bar.getAttribute("ended") == "true") {
+			midi_player_time.innerHTML = duration + '<a style="color:grey;"> / ' + duration + '</a>';
+			document.getElementById('midi_pause').style.visibility = 'hidden';
+			document.getElementById('midi_play').style.visibility = 'visible';
+
 		} else {
 			midi_player_time.innerHTML = '00:00<a style="color:grey;"> / 00:00</a>';
 		}
@@ -899,6 +1062,14 @@ function parse_playlist(playlist) {
 		$.get("index.php?get_audio_technical_data&track=" + filepath.replace(/&/g, '%26').replace(/ /g, '%20'), parse_audio_technical_data);
 	}
 
+	function get_true_link() {
+		var text_data = document.getElementById('audio_data_3');
+		var source = document.getElementById('audio_source').src;
+
+		text_data.innerHTML = '<u>TRUE LINK </u><br /><br /><br />' + decodeURIComponent(source)  + '<br><br>';
+		text_data.style.visibility = 'visible';
+	}
+
 	function parse_album_art(data) {
 		var album_art = document.getElementById('album_art');
 		if(data == 'null') {
@@ -936,6 +1107,8 @@ function parse_playlist(playlist) {
 		var autoplay = document.getElementById('is_autoplay').checked;
 		var loop = document.getElementById('is_loop').checked;
 		var random = document.getElementById('is_random').checked;
+
+		document.getElementById("speed_data").innerHTML = document.getElementById("audio_player").playbackRate;
 
 		if(override || autoplay) {
 			var hashval = window.location.hash.substr(1);
@@ -996,13 +1169,36 @@ function parse_playlist(playlist) {
 
 					// pause the former song and load the next one
 					player.pause();
-					player.load();
-					player.play();
+
+					if(source.src.split('.').pop() == 'mid') {
+						player.style.visibility = 'hidden';
+
+						document.getElementById('midi_player').style.visibility = 'visible';
+
+						document.getElementById('bar').setAttribute("ended", "false");
+
+						libMIDI.player_callback = display_time;
+
+						// on stock la durée dans un attribut comme un gros sauvage
+						document.getElementById('midi_player_time').setAttribute("duration", "");
+						libMIDI.get_duration(source.src, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+						document.getElementById('midi_play').style.visibility = 'hidden';
+						document.getElementById('midi_pause').style.visibility = 'visible';
+
+						libMIDI.play(source.src);
+
+					} else {
+						midi_stop()
+						player.load();
+						player.play();
+
+						get_audio_metadata();
+						get_audio_technical_data();
+					}
 
 					cog.classList.add("glow");
-
-					get_audio_metadata();
-					get_audio_technical_data();
+					get_true_link();
 
 					return;
 				}
@@ -1034,13 +1230,36 @@ function parse_playlist(playlist) {
 					}
 					// pause the former song and load the next one
 					player.pause();
-					player.load();
-					player.play();
+
+					if(source.src.split('.').pop() == 'mid') {
+						player.style.visibility = 'hidden';
+
+						document.getElementById('midi_player').style.visibility = 'visible';
+
+						document.getElementById('bar').setAttribute("ended", "false");
+
+						libMIDI.player_callback = display_time;
+
+						// on stock la durée dans un attribut comme un gros sauvage
+						document.getElementById('midi_player_time').setAttribute("duration", "");
+						libMIDI.get_duration(source.src, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+						document.getElementById('midi_play').style.visibility = 'hidden';
+						document.getElementById('midi_pause').style.visibility = 'visible';
+
+						libMIDI.play(source.src);
+
+					} else {
+						midi_stop()
+						player.load();
+						player.play();
+
+						get_audio_metadata();
+						get_audio_technical_data();
+					}
 
 					cog.classList.add("glow");
-
-					get_audio_metadata();
-					get_audio_technical_data();
+					get_true_link();
 				}
 				// loop back
 				else if ((loop && autoplay) || override) {
@@ -1071,18 +1290,42 @@ function parse_playlist(playlist) {
 
 					// pause the former song and load the next one
 					player.pause();
-					player.load();
-					player.play();
+
+					if(source.src.split('.').pop() == 'mid') {
+						player.style.visibility = 'hidden';
+
+						document.getElementById('midi_player').style.visibility = 'visible';
+
+						document.getElementById('bar').setAttribute("ended", "false");
+
+						libMIDI.player_callback = display_time;
+
+						// on stock la durée dans un attribut comme un gros sauvage
+						document.getElementById('midi_player_time').setAttribute("duration", "");
+						libMIDI.get_duration(source.src, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+						document.getElementById('midi_play').style.visibility = 'hidden';
+						document.getElementById('midi_pause').style.visibility = 'visible';
+
+						libMIDI.play(source.src);
+
+					} else {
+						midi_stop()
+						player.load();
+						player.play();
+
+						get_audio_metadata();
+						get_audio_technical_data();
+					}
 
 					cog.classList.add("glow");
-
-					get_audio_metadata();
-					get_audio_technical_data();
+					get_true_link();
 
 				} else {
 					player.pause();
 					get_audio_metadata();
 					get_audio_technical_data();
+					get_true_link();
 				}
 
 			// NOT IN PLAYLIST
@@ -1111,6 +1354,7 @@ function parse_playlist(playlist) {
 
 						var randomly_picked_track = playlist[Math.floor(Math.random()*playlist.length)];
 						source.src = randomly_picked_track;
+						document.getElementById('audio_data_1').innerHTML = playlist;
 
 						var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
 						filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
@@ -1137,13 +1381,36 @@ function parse_playlist(playlist) {
 
 						// pause the former song and load the next one
 						player.pause();
-						player.load();
-						player.play();
+
+						if(source.src.split('.').pop() == 'mid') {
+							player.style.visibility = 'hidden';
+
+							document.getElementById('midi_player').style.visibility = 'visible';
+
+							document.getElementById('bar').setAttribute("ended", "false");
+
+							libMIDI.player_callback = display_time;
+
+							// on stock la durée dans un attribut comme un gros sauvage
+							document.getElementById('midi_player_time').setAttribute("duration", "");
+							libMIDI.get_duration(source.src, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+							document.getElementById('midi_play').style.visibility = 'hidden';
+							document.getElementById('midi_pause').style.visibility = 'visible';
+
+							libMIDI.play(source.src);
+
+						} else {
+							midi_stop()
+							player.load();
+							player.play();
+
+							get_audio_metadata();
+							get_audio_technical_data();
+						}
 
 						cog.classList.add("glow");
-
-						get_audio_metadata();
-						get_audio_technical_data();
+						get_true_link();
 
 						return;
 					}
@@ -1177,13 +1444,36 @@ function parse_playlist(playlist) {
 							}
 							// pause the former song and load the next one
 							player.pause();
-							player.load();
-							player.play();
+
+							if(source.src.split('.').pop() == 'mid') {
+								player.style.visibility = 'hidden';
+
+								document.getElementById('midi_player').style.visibility = 'visible';
+
+								document.getElementById('bar').setAttribute("ended", "false");
+
+								libMIDI.player_callback = display_time;
+
+								// on stock la durée dans un attribut comme un gros sauvage
+								document.getElementById('midi_player_time').setAttribute("duration", "");
+								libMIDI.get_duration(source.src, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+								document.getElementById('midi_play').style.visibility = 'hidden';
+								document.getElementById('midi_pause').style.visibility = 'visible';
+
+								libMIDI.play(source.src);
+
+							} else {
+								midi_stop()
+								player.load();
+								player.play();
+
+								get_audio_metadata();
+								get_audio_technical_data();
+							}
 
 							cog.classList.add("glow");
-
-							get_audio_metadata();
-							get_audio_technical_data();
+							get_true_link();
 						}
 						// si la fin du fichier reference
 						// loop back
@@ -1214,18 +1504,42 @@ function parse_playlist(playlist) {
 
 							// pause the former song and load the next one
 							player.pause();
-							player.load();
-							player.play();
+
+							if(source.src.split('.').pop() == 'mid') {
+								player.style.visibility = 'hidden';
+
+								document.getElementById('midi_player').style.visibility = 'visible';
+
+								document.getElementById('bar').setAttribute("ended", "false");
+
+								libMIDI.player_callback = display_time;
+
+								// on stock la durée dans un attribut comme un gros sauvage
+								document.getElementById('midi_player_time').setAttribute("duration", "");
+								libMIDI.get_duration(source.src, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+								document.getElementById('midi_play').style.visibility = 'hidden';
+								document.getElementById('midi_pause').style.visibility = 'visible';
+
+								libMIDI.play(source.src);
+
+							} else {
+								midi_stop()
+								player.load();
+								player.play();
+
+								get_audio_metadata();
+								get_audio_technical_data();
+							}
 
 							cog.classList.add("glow");
-
-							get_audio_metadata();
-							get_audio_technical_data();
+							get_true_link();
 
 						} else {
 							player.pause();
 							get_audio_metadata();
 							get_audio_technical_data();
+							get_true_link();
 						}
 					}
 					// loop back
@@ -1256,13 +1570,36 @@ function parse_playlist(playlist) {
 
 						// pause the former song and load the next one
 						player.pause();
-						player.load();
-						player.play();
+
+						if(source.src.split('.').pop() == 'mid') {
+							player.style.visibility = 'hidden';
+
+							document.getElementById('midi_player').style.visibility = 'visible';
+
+							document.getElementById('bar').setAttribute("ended", "false");
+
+							libMIDI.player_callback = display_time;
+
+							// on stock la durée dans un attribut comme un gros sauvage
+							document.getElementById('midi_player_time').setAttribute("duration", "");
+							libMIDI.get_duration(source.src, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+							document.getElementById('midi_play').style.visibility = 'hidden';
+							document.getElementById('midi_pause').style.visibility = 'visible';
+
+							libMIDI.play(source.src);
+
+						} else {
+							midi_stop()
+							player.load();
+							player.play();
+
+							get_audio_metadata();
+							get_audio_technical_data();
+						}
 
 						cog.classList.add("glow");
-
-						get_audio_metadata();
-						get_audio_technical_data();
+						get_true_link();
 					}
 				}
 		}
@@ -1283,18 +1620,39 @@ function parse_playlist(playlist) {
 			var text_field = document.getElementById('audio_info');
 			var text_data_1 = document.getElementById('audio_data_1');
 			var text_data_2 = document.getElementById('audio_data_2');
+			var text_data_3 = document.getElementById('audio_data_3');
 			var midi_player_time = document.getElementById('midi_player_time');
 			var cog = document.getElementById('cog');
 
 			var date_type = e.getAttribute('data-type');
 			var file_path = decodeURIComponent(e.getAttribute('data-value'));
 
+			document.getElementById("speed_data").innerHTML = document.getElementById("audio_player").playbackRate;
+
 			if (e.classList.contains('is_playing')) {
 				if(date_type == "mid") {
-					if(document.getElementById('midi_play').style.visibility == 'hidden') {
-						midi_pause();
+
+					if(document.getElementById('bar').getAttribute("ended") == 'true') {
+						document.getElementById('bar').setAttribute("ended", "false");
+
+						player.pause();
+						libMIDI.player_callback = display_time;
+
+						// on stock la durée dans un attribut comme un gros sauvage
+						midi_player_time.setAttribute("duration", "");
+						libMIDI.get_duration(file_path, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+						document.getElementById('midi_play').style.visibility = 'hidden';
+						document.getElementById('midi_pause').style.visibility = 'visible';
+
+						libMIDI.play(file_path);
+						cog.classList.add("glow");
 					} else {
-						midi_resume();
+						if(document.getElementById('midi_play').style.visibility == 'hidden') {
+							midi_pause();
+						} else {
+							midi_resume();
+						}
 					}
 				} else {
 					if (player.paused) {
@@ -1324,7 +1682,11 @@ function parse_playlist(playlist) {
 
 				if(date_type == "mid") {
 					player.style.visibility = 'hidden';
+					cog.classList.add("glow");
+
 					document.getElementById('midi_player').style.visibility = 'visible';
+
+					document.getElementById('bar').setAttribute("ended", "false");
 
 					text_data_1.innerHTML = '';
 					text_data_1.style.visibility = 'hidden';
@@ -1340,7 +1702,9 @@ function parse_playlist(playlist) {
 					document.getElementById('midi_pause').style.visibility = 'visible';
 
 					libMIDI.play(file_path);
-					cog.classList.add("glow");
+
+					source.src = file_path;
+					get_true_link();
 				}
 
 				else {
@@ -1350,12 +1714,14 @@ function parse_playlist(playlist) {
 					document.getElementById('midi_pause').style.visibility = 'visible';
 
 					source.src = file_path;
+
 					player.load(); //call this to just preload the audio without playing
 					player.play(); //call this to play the song right away
 					cog.classList.add("glow");
 
 					get_audio_metadata();
 					get_audio_technical_data();
+					get_true_link();
 
 					var art_src = e.getAttribute("art");
 					album_art.setAttribute("src", art_src);
@@ -1366,9 +1732,27 @@ function parse_playlist(playlist) {
 
 		function midi_resume() {
 			var file_path = document.getElementById('audio_source').src; //oui, on récupère la source du player html... Sait-on jamais si un jour le support MIDI est implémenté...
-			libMIDI.resume(file_path);
 			var cog = document.getElementById('cog');
 			cog.classList.add("glow");
+
+			if(document.getElementById('bar').getAttribute("ended") == 'true') {
+				document.getElementById('bar').setAttribute("ended", "false");
+
+				document.getElementById('audio_player').pause();
+				libMIDI.player_callback = display_time;
+
+				// on stock la durée dans un attribut comme un gros sauvage
+				document.getElementById('midi_player_time').setAttribute("duration", "");
+				libMIDI.get_duration(file_path, function(seconds) { document.getElementById('midi_player_time').duration = seconds.toFixed(3);} );
+
+				document.getElementById('midi_play').style.visibility = 'hidden';
+				document.getElementById('midi_pause').style.visibility = 'visible';
+
+				libMIDI.play(file_path);
+				document.getElementById('cog').classList.add("glow");
+			} else {
+				libMIDI.resume(file_path);
+			}
 
 			document.getElementById('midi_play').style.visibility = 'hidden';
 			document.getElementById('midi_pause').style.visibility = 'visible';
@@ -1389,6 +1773,8 @@ function parse_playlist(playlist) {
 			libMIDI.stop(file_path);
 			var cog = document.getElementById('cog');
 			cog.classList.remove("glow");
+
+			document.getElementById('audio_player').style.visibility = 'visible';
 		}
 
 		function cog_unglow() {
@@ -1399,6 +1785,9 @@ function parse_playlist(playlist) {
 		function cog_glow() {
 			var cog = document.getElementById('cog');
 			cog.classList.add("glow");
+
+			var skull = document.getElementById('skull');
+			skull.classList.add("glow_green");
 		}
 
 		function midi_play_color_blue(e) {
@@ -1417,7 +1806,63 @@ function parse_playlist(playlist) {
 			e.setAttribute("src", "../resources/midi_player_pause_white.png");
 		}
 
+		function speed_p() {
+			var speed = document.getElementById("audio_player").defaultPlaybackRate + 0.25;
+			document.getElementById("audio_player").defaultPlaybackRate = speed;
+			document.getElementById("audio_player").playbackRate = speed;
+
+			if (speed < 4) {
+				document.getElementById("speedp").style.visibility = 'visible';
+				document.getElementById("speedm").style.visibility = 'visible';
+			} else {
+				document.getElementById("speedp").style.visibility = 'hidden';
+			}
+
+			document.getElementById("speed_data").innerHTML = document.getElementById("audio_player").playbackRate;
+		}
+
+		function speed_m() {
+			var speed = document.getElementById("audio_player").defaultPlaybackRate - 0.25;
+			document.getElementById("audio_player").playbackRate = speed;
+			document.getElementById("audio_player").defaultPlaybackRate = speed;
+
+			if (speed > 0.25){
+				document.getElementById("speedp").style.visibility = 'visible';
+				document.getElementById("speedm").style.visibility = 'visible';
+			} else {
+				document.getElementById("speedm").style.visibility = 'hidden';
+			}
+
+			document.getElementById("speed_data").innerHTML = document.getElementById("audio_player").playbackRate;
+		}
+
+		function speed_n() {
+			document.getElementById("audio_player").defaultPlaybackRate = 1;
+			document.getElementById("audio_player").playbackRate = 1;
+
+			document.getElementById("speed_data").innerHTML = document.getElementById("audio_player").playbackRate;
+
+			document.getElementById("speedm").style.visibility = 'visible';
+			document.getElementById("speedp").style.visibility = 'visible';
+		}
+
+		function forward() {
+			var current_time = document.getElementById("audio_player").currentTime;
+			var duration = document.getElementById("audio_player").duration;
+
+			document.getElementById("audio_player").currentTime = current_time + 10;
+		}
+
+		function backward() {
+			var current_time = document.getElementById("audio_player").currentTime;
+			var duration = document.getElementById("audio_player").duration;
+
+			document.getElementById("audio_player").currentTime = current_time - 10;
+		}
+
 		</script>
+
+		<title>Vox Caster Publicae</title>
 
 		<head>
 			<link rel="icon" type="image/png" sizes="32x32" href="../resources/voxcast-32x32.png">
@@ -1427,20 +1872,26 @@ function parse_playlist(playlist) {
 		<div id="midi_player">
 			<image id="midi_play" src="../resources/midi_player_play_white.png" onclick="midi_resume()"  onmouseover="midi_play_color_blue(this)" onmouseout ="midi_play_color_white(this)"></image>
 			<image id="midi_pause" src="../resources/midi_player_pause_white.png" onclick="midi_pause()"  onmouseover="midi_pause_color_blue(this)" onmouseout ="midi_pause_color_white(this)"></image>
-			<div id="midi_progressbar"><div id="bar"><span id="midi_bar_ball"></span></div></div>
+			<div id="midi_progressbar"><div id="bar" ended="false"><span id="midi_bar_ball"></span></div></div>
 			<div id="midi_player_time" >00:00<a style="color:grey;"> / 00:00</a></div>
 		</div>
 
+		<div>
 		<audio id="audio_player" onended="play_next()" onpause="cog_unglow()" onplaying="cog_glow()" controls>
 				<source id="audio_source" src="init"> </source>
 		</audio>
+		<div id="speed_data"></div>
+		<span id="skull">&#9679;</span>
+		<image id="speed" src="../resources/speed.png"></image>
+		<textarea id="audio_info" row="1" cols="1" readonly></textarea>
+	</div>
 
-		<textarea id="audio_info" row="1" cols="1"></textarea>
 
 		<div id="data_display">
 			<a id="audio_data">
-				<div id="audio_data_1" row="1" cols="1"></div>
-				<div id="audio_data_2" row="1" cols="1"></div>
+				<div id="audio_data_3"></div>
+				<div id="audio_data_1"></div>
+				<div id="audio_data_2"></div>
 			</a>
 			<span id="cog">&#9673;</span>
 			<img id="album_art">
@@ -1448,10 +1899,17 @@ function parse_playlist(playlist) {
 		</div>
 
 		<div id="buttons_raw">
-			<button type="button" id="play_next" onclick="play_next(true)">next</button>
-			<input type="checkbox" id="is_autoplay" name="is_autoplay" value="true">autoplay</input>
-			<input type="checkbox" id="is_loop" name="is_loop" value="true">loop</input>
-			<input type="checkbox" id="is_random" name="is_random" value="true">random</input>
+			<image src="../resources/next.png" id="play_next" onclick="play_next(true)"></image>
+			<image src="../resources/backward.png" id="backward" onclick="backward()"></image>
+			<image src="../resources/forward.png" id="forward" onclick="forward()"></image>
+			<image src="../resources/moins.png" id="speedm" onclick="speed_m()"></image>
+			<image src="../resources/bouton.png" id="speed_normal" onclick="speed_n()"></image>
+			<image src="../resources/plus.png" id="speedp" onclick="speed_p()"></image>
+			<div id="checkbox_raw">
+				<input type="checkbox" id="is_autoplay" name="is_autoplay" value="true">autoplay</input>
+				<input type="checkbox" id="is_loop" name="is_loop" value="true">loop</input>
+				<input type="checkbox" id="is_random" name="is_random" value="true">random</input>
+			</div>
 		</div>
 
 		<body>

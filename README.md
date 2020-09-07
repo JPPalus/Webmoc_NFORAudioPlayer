@@ -8,8 +8,8 @@ The `.php` file is a self-sufficient drop-in of the project.
 * ~~Gestion des playlistes M3U.~~
 * ~~Un machin pour indiquer la piste en cours de lecture.~~
 * ~~Empecher la piste s'arrêter en cas de changement de dossier~~.
-* Ajouter des contrôles supplémentaires au lecteur.
-* Retravailler le Visuel du lecteur.
+* ~~Ajouter des contrôles supplémentaires au lecteur.~~
+* ~~Retravailler le Visuel du lecteur.~~
 * ~~Afficher les métadonnées.~~
 * ~~Album art.~~
 * ~~Gérer le MIDI~~.

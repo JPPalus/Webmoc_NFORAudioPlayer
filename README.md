@@ -14,3 +14,4 @@ The `.php` file is a self-sufficient drop-in of the project.
 * ~~Album art.~~
 * ~~Gérer le MIDI~~.
 * ~~Ajouter la duration dans le tableau~~.
+* Précharger le premier de la liste de lecture.

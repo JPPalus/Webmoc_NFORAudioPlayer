@@ -841,7 +841,7 @@ function parse_playlist(playlist) {
 		var file_list = [];
 
 		for(i = 0; i < (playlist.length); i++) {
-			var filepath = '.' + playlist[i].split("https://malekith.fr/VoxCasterPublicae").pop();
+			var filepath = '.' + playlist[i].split("https://vox-caster.fr").pop();
 			if (filepath != '.') file_list.push(filepath);
 		}
 
@@ -974,7 +974,7 @@ function parse_playlist(playlist) {
 			if ($link.attr('data-type') == 'm3u') $link.addClass("playlist");
 
 			if (!data.is_dir) {
-				if("https://malekith.fr/VoxCasterPublicae/" + data.path == document.getElementById('audio_source').src) {
+				if("https://vox-caster.fr/" + data.path == document.getElementById('audio_source').src) {
 					$link.addClass("is_playing");
 				} else {
 					$link.addClass("is_not_playing");
@@ -1085,14 +1085,14 @@ function parse_playlist(playlist) {
 
 	function get_audio_metadata() {
 		var source = document.getElementById('audio_source');
-		var filepath = '.' + source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+		var filepath = '.' + source.src.split("https://vox-caster.fr").pop();
 
 		$.get("index.php?get_formated_audio_metadata&track=" + filepath.replace(/&/g, '%26').replace(/ /g, '%20'), parse_audio_metadata);
 	}
 
 	function get_audio_technical_data() {
 		var source = document.getElementById('audio_source');
-		var filepath = '.' + source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+		var filepath = '.' + source.src.split("https://vox-caster.fr").pop();
 
 		$.get("index.php?get_audio_technical_data&track=" + filepath.replace(/&/g, '%26').replace(/ /g, '%20'), parse_audio_technical_data);
 	}
@@ -1116,7 +1116,7 @@ function parse_playlist(playlist) {
 
 	function check_album_art() {
 		var source = document.getElementById('audio_source');
-		var filepath = '.' + source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+		var filepath = '.' + source.src.split("https://vox-caster.fr").pop();
 
 		$.get("index.php?get_album_art&track=" + filepath, parse_album_art);
 	}
@@ -1127,7 +1127,7 @@ function parse_playlist(playlist) {
 		var playables = [];
 
 		for (i = 0; i < playlist.length - 1; i++) {
-			if (String(playlist[i].split("https://malekith.fr/VoxCasterPublicae/").pop().match(/.*\//)) == String(dir)) {
+			if (String(playlist[i].split("https://vox-caster.fr/").pop().match(/.*\//)) == String(dir)) {
 				playables.push(playlist[i]);
 			}
 		}
@@ -1138,7 +1138,7 @@ function parse_playlist(playlist) {
 	// play next song
 	function play_next(override = false) {
 		var source = document.getElementById('audio_source');
-		if(source.src == "https://malekith.fr/VoxCasterPublicae/init") return;
+		if(source.src == "https://vox-caster.fr/init") return;
 		if(source.src == "init") return;
 
 		var autoplay = document.getElementById('is_autoplay').checked;
@@ -1181,7 +1181,7 @@ function parse_playlist(playlist) {
 					var randomly_picked_track = playables[Math.floor(Math.random()*playables.length - 1)];
 					source.src = randomly_picked_track;
 
-					var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+					var filename = source.src.split("https://vox-caster.fr").pop();
 					filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
 					text_field.value = filename.replaceAll("%C3%80", "À");
 
@@ -1192,7 +1192,7 @@ function parse_playlist(playlist) {
 					for(i = 0; i < next_playing.length; i++) {
 						if(next_playing[i].getAttribute('data-type') != 'folder') {
 							if(next_playing[i].getAttribute('data-type') != 'm3u') {
-								if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == randomly_picked_track) {
+								if(("https://vox-caster.fr/" + next_playing[i].getAttribute('data-value').split("./").pop()) == randomly_picked_track) {
 									next_playing[i].classList.add('is_playing');
 									next_playing[i].classList.remove('is_not_playing');
 
@@ -1248,7 +1248,7 @@ function parse_playlist(playlist) {
 				// song to play :
 				if((index_of_source_in_playlist + 1) < playlist.length - 1) {
 					source.src = playlist[index_of_source_in_playlist + 1];
-					var filename = decodeURIComponent(source.src.split("https://malekith.fr/VoxCasterPublicae").pop());
+					var filename = decodeURIComponent(source.src.split("https://vox-caster.fr").pop());
 					filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
 					text_field.value = filename.replaceAll("%C3%80", "À");;
 
@@ -1259,7 +1259,7 @@ function parse_playlist(playlist) {
 					for(i = 0; i < next_playing.length; i++) {
 						if(next_playing[i].getAttribute('data-type') != 'folder') {
 							if(next_playing[i].getAttribute('data-type') != 'm3u') {
-								if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[index_of_source_in_playlist + 1])) {
+								if(("https://vox-caster.fr/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[index_of_source_in_playlist + 1])) {
 									next_playing[i].classList.add('is_playing');
 									next_playing[i].classList.remove('is_not_playing');
 
@@ -1312,7 +1312,7 @@ function parse_playlist(playlist) {
 				else if ((loop && autoplay) || override) {
 
 					source.src = playlist[0];
-					var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+					var filename = source.src.split("https://vox-caster.fr").pop();
 					filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
 					text_field.value = filename.replaceAll("%C3%80", "À");;
 
@@ -1323,7 +1323,7 @@ function parse_playlist(playlist) {
 					for(i = 0; i < next_playing.length; i++) {
 						if(next_playing[i].getAttribute('data-type') != 'folder') {
 							if(next_playing[i].getAttribute('data-type') != 'm3u') {
-								if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[0])) {
+								if(("https://vox-caster.fr/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[0])) {
 									next_playing[i].classList.add('is_playing');
 									next_playing[i].classList.remove('is_not_playing');
 
@@ -1388,14 +1388,14 @@ function parse_playlist(playlist) {
 
 				var playlist = req.responseText.split('\n');
 				var filepath = decodeURIComponent(source.src.split("./").pop());
-				var file_dir_location = filepath.split("https://malekith.fr/VoxCasterPublicae/").pop().match(/.*\//);
+				var file_dir_location = filepath.split("https://vox-caster.fr/").pop().match(/.*\//);
 				var playlist = get_list_playables_in_dir(file_dir_location, playlist);
 				var index_of_source_in_playlist = playlist.indexOf(filepath) ;
 				var first_dir_index = index_of_source_in_playlist;
 
 					if (first_dir_index > 0) {
 						for (i = first_dir_index - 1; i >= 0; i--) {
-							if (String(playlist[i].split("https://malekith.fr/VoxCasterPublicae/").pop().match(/.*\//)) == String(file_dir_location)) {
+							if (String(playlist[i].split("https://vox-caster.fr/").pop().match(/.*\//)) == String(file_dir_location)) {
 								first_dir_index = i;
 							}
 						}
@@ -1408,7 +1408,7 @@ function parse_playlist(playlist) {
 						source.src = randomly_picked_track;
 						document.getElementById('audio_data_1').innerHTML = playlist;
 
-						var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+						var filename = source.src.split("https://vox-caster.fr").pop();
 						filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
 						text_field.value = filename.replaceAll("%C3%80", "À");;
 
@@ -1419,7 +1419,7 @@ function parse_playlist(playlist) {
 						for(i = 0; i < next_playing.length; i++) {
 							if(next_playing[i].getAttribute('data-type') != 'folder') {
 								if(next_playing[i].getAttribute('data-type') != 'm3u') {
-									if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == randomly_picked_track) {
+									if(("https://vox-caster.fr/" + next_playing[i].getAttribute('data-value').split("./").pop()) == randomly_picked_track) {
 										next_playing[i].classList.add('is_playing');
 										next_playing[i].classList.remove('is_not_playing');
 
@@ -1476,9 +1476,9 @@ function parse_playlist(playlist) {
 					// si le fichier reference n'est pas au bout
 					if ((index_of_source_in_playlist + 1) < playlist.length) {
 
-						if (String(playlist[index_of_source_in_playlist + 1].split("https://malekith.fr/VoxCasterPublicae/").pop().match(/.*\//)) == String(file_dir_location)) {
+						if (String(playlist[index_of_source_in_playlist + 1].split("https://vox-caster.fr/").pop().match(/.*\//)) == String(file_dir_location)) {
 							source.src = playlist[index_of_source_in_playlist + 1];
-							var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+							var filename = source.src.split("https://vox-caster.fr").pop();
 							filename = "Home" + filename.replaceAll('/', " \u25B8 ").replace(/%20/g, ' ');
 							text_field.value = filename.replaceAll("%C3%80", "À");
 
@@ -1489,7 +1489,7 @@ function parse_playlist(playlist) {
 							for(i = 0; i < next_playing.length; i++) {
 								if(next_playing[i].getAttribute('data-type') != 'folder') {
 									if(next_playing[i].getAttribute('data-type') != 'm3u') {
-										if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[index_of_source_in_playlist + 1])) {
+										if(("https://vox-caster.fr/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[index_of_source_in_playlist + 1])) {
 											next_playing[i].classList.add('is_playing');
 											next_playing[i].classList.remove('is_not_playing');
 
@@ -1542,7 +1542,7 @@ function parse_playlist(playlist) {
 						// loop back
 						else if ((loop && autoplay) || override) {
 							source.src = playlist[first_dir_index];
-							var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+							var filename = source.src.split("https://vox-caster.fr").pop();
 							filename = "Home" + filename.replaceAll('/', " \u25B8 ").replace(/%20/g, ' ');
 							text_field.value = filename.replaceAll("%C3%80", "À");;
 
@@ -1553,7 +1553,7 @@ function parse_playlist(playlist) {
 							for(i = 0; i < next_playing.length; i++) {
 								if(next_playing[i].getAttribute('data-type') != 'folder') {
 									if(next_playing[i].getAttribute('data-type') != 'm3u') {
-										if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[first_dir_index])) {
+										if(("https://vox-caster.fr/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[first_dir_index])) {
 											next_playing[i].classList.add('is_playing');
 											next_playing[i].classList.remove('is_not_playing');
 
@@ -1613,7 +1613,7 @@ function parse_playlist(playlist) {
 					// loop back
 					else if ((loop && autoplay) || override) {
 						source.src = playlist[first_dir_index];
-						var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
+						var filename = source.src.split("https://vox-caster.fr").pop();
 						filename = "Home" + filename.replaceAll('/', " \u25B8 ").replace(/%20/g, ' ');
 						text_field.value = filename.replaceAll("%C3%80", "À");;
 
@@ -1624,7 +1624,7 @@ function parse_playlist(playlist) {
 						for(i = 0; i < next_playing.length; i++) {
 							if(next_playing[i].getAttribute('data-type') != 'folder') {
 								if(next_playing[i].getAttribute('data-type') != 'm3u') {
-									if(("https://malekith.fr/VoxCasterPublicae/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[first_dir_index])) {
+									if(("https://vox-caster.fr/" + next_playing[i].getAttribute('data-value').split("./").pop()) == (playlist[first_dir_index])) {
 										next_playing[i].classList.add('is_playing');
 										next_playing[i].classList.remove('is_not_playing');
 

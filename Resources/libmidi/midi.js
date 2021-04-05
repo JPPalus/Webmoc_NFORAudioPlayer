@@ -216,7 +216,7 @@
     F = 0,
     H = 0,
     W = 0,
-    q = "../resources/libmidi/",
+    q = "/Resources/libmidi/",
     z = 0,
     G = "",
     X = !1,

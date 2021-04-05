@@ -8,6 +8,7 @@ $allow_show_folders = true; // Set to false to hide all subdirectories
 
 $disallowed_patterns = ['*.php'];  // must be an array.  Matching files not allowed to be uploaded
 $hidden_patterns = ['*.php','.*', 'playlist.m3u']; // Matching files hidden in directory index
+$hidden_folders = ['Resources']; // Matching folders hidden in directory index
 $allowed_patterns = ['*.mp3', '*.wav', '*.flac', '*.ogg', '*.mid', '*.m3u']; // Matching files hidden in directory index
 
 $PASSWORD = '';  // Set the password, to access the file manager... (optional)
@@ -58,7 +59,7 @@ if($_GET['do'] == 'list') {
 		$directory = $file;
 		$result = [];
 		$files = array_diff(scandir($directory), ['.','..']);
-		foreach ($files as $entry) if (is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidden_patterns)) {
+		foreach ($files as $entry) if (is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidden_patterns, $hidden_folders)) {
 			$i = $directory . '/' . $entry;
 			$stat = stat($i);
 			$result[] = [
@@ -135,20 +136,25 @@ if($_GET['do'] == 'list') {
 	exit;
 }
 
-function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidden_patterns) {
+function is_entry_allowed($entry, $allow_show_folders, $allowed_patterns, $hidden_patterns, $hidden_folders) {
 
 	if ($entry === basename(__FILE__)) {
 		return false;
 	}
-	// oui
+
+	if(is_dir($entry) && $allow_show_folders) {
+		foreach($hidden_folders as $hidden) {
+			if(fnmatch($hidden, $entry)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	foreach($hidden_patterns as $hidden) {
 		if(fnmatch($hidden, $entry)) {
 			return false;
 		}
-	}
-
-	if (is_dir($entry) && $allow_show_folders) {
-		return true;
 	}
 
 	foreach($allowed_patterns as $pattern) {
@@ -674,7 +680,6 @@ function get_absolute_path($path) {
 
 	.name {
 		/* background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABFklEQVQ4jZXTPUoEQRCG4WeGxUg8gBjJYrSIdxAvYGAo4gE8gmAgi4iBiLmYGhiIgbggYmSmkZipLCYGYiTiTxnsLI7N7Kw2NDRUvR/VVV9lkhOMYxGzmMQHHnGK/YxuyvTBPFgNXoMYcN+C9aCRwo3goAZM71EwUhZoJwnvfxDZ7sPNCuAimA/uawQ+g5ZgqyJ4XoiPBps1Fe0KrisCZ0mPWkVVad6t4GWYQGlKy8FTKe81r5xpxcn4wpXEBznuhsHBWNH1S8yUQt0cnQomL0DBAm6wIjUQHcHUgDE2g5MhY5zul7iRBJ+HWDqCnfIfG8HhP6x8/MvKJZG16C1M3TK1o9SLrKLjE1jCnN6bn3Xey3go538DGkAuGZ0eLmUAAAAASUVORK5CYII=) no-repeat scroll 8px 15px; */
-		/* background: url(../Resources/VoxCasterPublicae/play_red.png) no-repeat; */
 		background-position: 8px 15px;
 		background-size: 20px 20px;
 		padding: 15px 0 10px 40px;
@@ -683,7 +688,7 @@ function get_absolute_path($path) {
 	}
 
 	.is_playing {
-		background: url(../Resources/VoxCasterPublicae/play_green.png) no-repeat;
+		background: url(/Resources/play_green.png) no-repeat;
 		background-position: 8px 15px;
 		background-size: 20px 20px;
 		padding:15px 0 10px 40px;
@@ -692,7 +697,7 @@ function get_absolute_path($path) {
 	}
 
 	.is_not_playing {
-		background: url(../Resources/VoxCasterPublicae/play_red.png) no-repeat;
+		background: url(/Resources/play_red.png) no-repeat;
 		background-position: 8px 15px;
 		background-size: 20px 20px;
 		padding: 15px 0 10px 40px;
@@ -701,7 +706,7 @@ function get_absolute_path($path) {
 	}
 
 	.is_dir {
-		background: url(../Resources/VoxCasterPublicae/folder.png) no-repeat;
+		background: url(/Resources/folder.png) no-repeat;
 		background-position: 5px 10px;
 		background-size: 27px 27px;
 		color: GoldenRod;
@@ -709,7 +714,7 @@ function get_absolute_path($path) {
 	}
 
 	.playlist {
-		background: url(../Resources/VoxCasterPublicae/playlist.png) no-repeat;
+		background: url(/Resources/playlist.png) no-repeat;
 		background-position: 8px 15px;
 		background-size: 20px 20px;
 		padding:15px 0 10px 40px;
@@ -718,7 +723,7 @@ function get_absolute_path($path) {
 	}
 
 	#breadcrumb_playlist_icon {
-		background: url(../Resources/VoxCasterPublicae/playlist.png) no-repeat;
+		background: url(/Resources/playlist.png) no-repeat;
 		background-position: 8px 15px;
 		background-size: 20px 20px;
 		padding:15px 0 10px 40px;
@@ -794,8 +799,8 @@ function get_absolute_path($path) {
 
 </style>
 
-<script src="../Resources/VoxCasterPublicae/jquery-3.5.1.min.js"></script>
-<script src="../Resources/VoxCasterPublicae/libmidi/midi.js"></script>
+<script src="/Resources/jquery-3.5.1.min.js"></script>
+<script src="/Resources/libmidi/midi.js"></script>
 
 <script>
 
@@ -1002,7 +1007,7 @@ function parse_playlist(playlist) {
 
 		function renderBreadcrumbs(path) {
 			var base = "",
-			$html = $('<div/ id="breadcrumb_div">').append( $('<a href=#><img class="aquila" src="../Resources/VoxCasterPublicae/aquila.png"></a></div>') );
+			$html = $('<div/ id="breadcrumb_div">').append( $('<a href=#><img class="aquila" src="/Resources/aquila.png"></a></div>') );
 			$.each(path.split('%2F'),function(k,v){
 				if(v) {
 					var v_as_text = decodeURIComponent(v);
@@ -1117,6 +1122,8 @@ function parse_playlist(playlist) {
 	}
 
 	function get_list_playables_in_dir(dir, playlist) {
+
+
 		var playables = [];
 
 		for (i = 0; i < playlist.length - 1; i++) {
@@ -1176,7 +1183,7 @@ function parse_playlist(playlist) {
 
 					var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
 					filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
-					text_field.value = filename;
+					text_field.value = filename.replaceAll("%C3%80", "À");
 
 					// set the correct icon
 					is_playing_change_state();
@@ -1202,6 +1209,11 @@ function parse_playlist(playlist) {
 
 					if(source.src.split('.').pop() == 'mid') {
 						player.style.visibility = 'hidden';
+						document.getElementById('backward').style.visibility = 'hidden';
+						document.getElementById('forward').style.visibility = 'hidden';
+						document.getElementById('speedm').style.visibility = 'hidden';
+						document.getElementById('speed_normal').style.visibility = 'hidden';
+						document.getElementById('speedp').style.visibility = 'hidden';
 
 						document.getElementById('midi_player').style.visibility = 'visible';
 
@@ -1238,7 +1250,7 @@ function parse_playlist(playlist) {
 					source.src = playlist[index_of_source_in_playlist + 1];
 					var filename = decodeURIComponent(source.src.split("https://malekith.fr/VoxCasterPublicae").pop());
 					filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
-					text_field.value = filename;
+					text_field.value = filename.replaceAll("%C3%80", "À");;
 
 					// set the correct icon
 					is_playing_change_state();
@@ -1263,6 +1275,11 @@ function parse_playlist(playlist) {
 
 					if(source.src.split('.').pop() == 'mid') {
 						player.style.visibility = 'hidden';
+						document.getElementById('backward').style.visibility = 'hidden';
+						document.getElementById('forward').style.visibility = 'hidden';
+						document.getElementById('speedm').style.visibility = 'hidden';
+						document.getElementById('speed_normal').style.visibility = 'hidden';
+						document.getElementById('speedp').style.visibility = 'hidden';
 
 						document.getElementById('midi_player').style.visibility = 'visible';
 
@@ -1297,7 +1314,7 @@ function parse_playlist(playlist) {
 					source.src = playlist[0];
 					var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
 					filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
-					text_field.value = filename;
+					text_field.value = filename.replaceAll("%C3%80", "À");;
 
 					// set the correct icon
 					is_playing_change_state();
@@ -1323,6 +1340,11 @@ function parse_playlist(playlist) {
 
 					if(source.src.split('.').pop() == 'mid') {
 						player.style.visibility = 'hidden';
+						document.getElementById('backward').style.visibility = 'hidden';
+						document.getElementById('forward').style.visibility = 'hidden';
+						document.getElementById('speedm').style.visibility = 'hidden';
+						document.getElementById('speed_normal').style.visibility = 'hidden';
+						document.getElementById('speedp').style.visibility = 'hidden';
 
 						document.getElementById('midi_player').style.visibility = 'visible';
 
@@ -1388,7 +1410,7 @@ function parse_playlist(playlist) {
 
 						var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
 						filename = "Home" + decodeURIComponent(filename).replaceAll('/', " \u25B8 ");
-						text_field.value = filename;
+						text_field.value = filename.replaceAll("%C3%80", "À");;
 
 						// set the correct icon
 						is_playing_change_state();
@@ -1414,6 +1436,11 @@ function parse_playlist(playlist) {
 
 						if(source.src.split('.').pop() == 'mid') {
 							player.style.visibility = 'hidden';
+							document.getElementById('backward').style.visibility = 'hidden';
+							document.getElementById('forward').style.visibility = 'hidden';
+							document.getElementById('speedm').style.visibility = 'hidden';
+							document.getElementById('speed_normal').style.visibility = 'hidden';
+							document.getElementById('speedp').style.visibility = 'hidden';
 
 							document.getElementById('midi_player').style.visibility = 'visible';
 
@@ -1448,11 +1475,12 @@ function parse_playlist(playlist) {
 
 					// si le fichier reference n'est pas au bout
 					if ((index_of_source_in_playlist + 1) < playlist.length) {
+
 						if (String(playlist[index_of_source_in_playlist + 1].split("https://malekith.fr/VoxCasterPublicae/").pop().match(/.*\//)) == String(file_dir_location)) {
 							source.src = playlist[index_of_source_in_playlist + 1];
 							var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
 							filename = "Home" + filename.replaceAll('/', " \u25B8 ").replace(/%20/g, ' ');
-							text_field.value = filename;
+							text_field.value = filename.replaceAll("%C3%80", "À");
 
 							// set the correct icon
 							is_playing_change_state();
@@ -1477,6 +1505,11 @@ function parse_playlist(playlist) {
 
 							if(source.src.split('.').pop() == 'mid') {
 								player.style.visibility = 'hidden';
+								document.getElementById('backward').style.visibility = 'hidden';
+								document.getElementById('forward').style.visibility = 'hidden';
+								document.getElementById('speedm').style.visibility = 'hidden';
+								document.getElementById('speed_normal').style.visibility = 'hidden';
+								document.getElementById('speedp').style.visibility = 'hidden';
 
 								document.getElementById('midi_player').style.visibility = 'visible';
 
@@ -1511,7 +1544,7 @@ function parse_playlist(playlist) {
 							source.src = playlist[first_dir_index];
 							var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
 							filename = "Home" + filename.replaceAll('/', " \u25B8 ").replace(/%20/g, ' ');
-							text_field.value = filename;
+							text_field.value = filename.replaceAll("%C3%80", "À");;
 
 							// set the correct icon
 							is_playing_change_state();
@@ -1537,6 +1570,11 @@ function parse_playlist(playlist) {
 
 							if(source.src.split('.').pop() == 'mid') {
 								player.style.visibility = 'hidden';
+								document.getElementById('backward').style.visibility = 'hidden';
+								document.getElementById('forward').style.visibility = 'hidden';
+								document.getElementById('speedm').style.visibility = 'hidden';
+								document.getElementById('speed_normal').style.visibility = 'hidden';
+								document.getElementById('speedp').style.visibility = 'hidden';
 
 								document.getElementById('midi_player').style.visibility = 'visible';
 
@@ -1577,7 +1615,7 @@ function parse_playlist(playlist) {
 						source.src = playlist[first_dir_index];
 						var filename = source.src.split("https://malekith.fr/VoxCasterPublicae").pop();
 						filename = "Home" + filename.replaceAll('/', " \u25B8 ").replace(/%20/g, ' ');
-						text_field.value = filename;
+						text_field.value = filename.replaceAll("%C3%80", "À");;
 
 						// set the correct icon
 						is_playing_change_state();
@@ -1603,6 +1641,11 @@ function parse_playlist(playlist) {
 
 						if(source.src.split('.').pop() == 'mid') {
 							player.style.visibility = 'hidden';
+							document.getElementById('backward').style.visibility = 'hidden';
+							document.getElementById('forward').style.visibility = 'hidden';
+							document.getElementById('speedm').style.visibility = 'hidden';
+							document.getElementById('speed_normal').style.visibility = 'hidden';
+							document.getElementById('speedp').style.visibility = 'hidden';
 
 							document.getElementById('midi_player').style.visibility = 'visible';
 
@@ -1704,10 +1747,16 @@ function parse_playlist(playlist) {
 				// format the texbox
 				var filename = file_path.replace('./', "");
 				filename = "Home" + " \u25B8 " + filename.replaceAll('/', " \u25B8 ");
-				text_field.value = filename;
+				text_field.value = filename.replaceAll("%C3%80", "À");;
 
 				if(date_type == "mid") {
 					player.style.visibility = 'hidden';
+					document.getElementById('backward').style.visibility = 'hidden';
+					document.getElementById('forward').style.visibility = 'hidden';
+					document.getElementById('speedm').style.visibility = 'hidden';
+					document.getElementById('speed_normal').style.visibility = 'hidden';
+					document.getElementById('speedp').style.visibility = 'hidden';
+
 					cog.classList.add("glow");
 
 					document.getElementById('midi_player').style.visibility = 'visible';
@@ -1735,6 +1784,13 @@ function parse_playlist(playlist) {
 
 				else {
 					player.style.visibility = 'visible';
+
+					document.getElementById('backward').style.visibility = 'visible';
+					document.getElementById('forward').style.visibility = 'visible';
+					document.getElementById('speedm').style.visibility = 'visible';
+					document.getElementById('speed_normal').style.visibility = 'visible';
+					document.getElementById('speedp').style.visibility = 'visible';
+
 					document.getElementById('midi_player').style.visibility = 'hidden';
 					document.getElementById('midi_play').style.visibility = 'hidden';
 					document.getElementById('midi_pause').style.visibility = 'visible';
@@ -1817,19 +1873,19 @@ function parse_playlist(playlist) {
 		}
 
 		function midi_play_color_blue(e) {
-			e.setAttribute("src", "../Resources/VoxCasterPublicae/midi_player_play.png");
+			e.setAttribute("src", "/Resources/midi_player_play.png");
 		}
 
 		function midi_play_color_white(e) {
-			e.setAttribute("src", "../Resources/VoxCasterPublicae/midi_player_play_white.png");
+			e.setAttribute("src", "/Resources/midi_player_play_white.png");
 		}
 
 		function midi_pause_color_blue(e) {
-			e.setAttribute("src", "../Resources/VoxCasterPublicae/midi_player_pause.png");
+			e.setAttribute("src", "/Resources/midi_player_pause.png");
 		}
 
 		function midi_pause_color_white(e) {
-			e.setAttribute("src", "../Resources/VoxCasterPublicae/midi_player_pause_white.png");
+			e.setAttribute("src", "/Resources/midi_player_pause_white.png");
 		}
 
 		function speed_p() {
@@ -1891,13 +1947,13 @@ function parse_playlist(playlist) {
 		<title>Vox Caster Publicae</title>
 
 		<head>
-			<link rel="icon" type="image/png" sizes="32x32" href="../Resources/VoxCasterPublicae/voxcast-32x32.png">
-			<link rel="icon" type="image/png" sizes="16x16" href="../Resources/VoxCasterPublicae/voxcast-16x16.png">
+			<link rel="icon" type="image/png" sizes="32x32" href="/Resources/voxcast-32x32.png">
+			<link rel="icon" type="image/png" sizes="16x16" href="/Resources/voxcast-16x16.png">
 		</head>
 
 		<div id="midi_player">
-			<image id="midi_play" src="../Resources/VoxCasterPublicae/midi_player_play_white.png" onclick="midi_resume()"  onmouseover="midi_play_color_blue(this)" onmouseout ="midi_play_color_white(this)"></image>
-			<image id="midi_pause" src="../Resources/VoxCasterPublicae/midi_player_pause_white.png" onclick="midi_pause()"  onmouseover="midi_pause_color_blue(this)" onmouseout ="midi_pause_color_white(this)"></image>
+			<image id="midi_play" src="/Resources/midi_player_play_white.png" onclick="midi_resume()"  onmouseover="midi_play_color_blue(this)" onmouseout ="midi_play_color_white(this)"></image>
+			<image id="midi_pause" src="/Resources/midi_player_pause_white.png" onclick="midi_pause()"  onmouseover="midi_pause_color_blue(this)" onmouseout ="midi_pause_color_white(this)"></image>
 			<div id="midi_progressbar"><div id="bar" ended="false"><span id="midi_bar_ball"></span></div></div>
 			<div id="midi_player_time" >00:00<a style="color:grey;"> / 00:00</a></div>
 		</div>
@@ -1908,7 +1964,7 @@ function parse_playlist(playlist) {
 		</audio>
 		<div id="speed_data"></div>
 		<span id="skull">&#9679;</span>
-		<image id="speed" src="../Resources/VoxCasterPublicae/speed.png"></image>
+		<image id="speed" src="/Resources/speed.png"></image>
 		<textarea id="audio_info" row="1" cols="1" readonly></textarea>
 	</div>
 
@@ -1921,16 +1977,16 @@ function parse_playlist(playlist) {
 			</a>
 			<span id="cog">&#9673;</span>
 			<img id="album_art">
-			<img id="overlay" src="../Resources/VoxCasterPublicae/overlay.png">
+			<img id="overlay" src="/Resources/overlay.png">
 		</div>
 
 		<div id="buttons_raw">
-			<image src="../Resources/VoxCasterPublicae/next.png" id="play_next" onclick="play_next(true)"></image>
-			<image src="../Resources/VoxCasterPublicae/backward.png" id="backward" onclick="backward()"></image>
-			<image src="../Resources/VoxCasterPublicae/forward.png" id="forward" onclick="forward()"></image>
-			<image src="../Resources/VoxCasterPublicae/moins.png" id="speedm" onclick="speed_m()"></image>
-			<image src="../Resources/VoxCasterPublicae/bouton.png" id="speed_normal" onclick="speed_n()"></image>
-			<image src="../Resources/VoxCasterPublicae/plus.png" id="speedp" onclick="speed_p()"></image>
+			<image src="/Resources/next.png" id="play_next" onclick="play_next(true)"></image>
+			<image src="/Resources/backward.png" id="backward" onclick="backward()"></image>
+			<image src="/Resources/forward.png" id="forward" onclick="forward()"></image>
+			<image src="/Resources/moins.png" id="speedm" onclick="speed_m()"></image>
+			<image src="/Resources/bouton.png" id="speed_normal" onclick="speed_n()"></image>
+			<image src="/Resources/plus.png" id="speedp" onclick="speed_p()"></image>
 			<div id="checkbox_raw">
 				<input type="checkbox" id="is_autoplay" name="is_autoplay" value="true">autoplay</input>
 				<input type="checkbox" id="is_loop" name="is_loop" value="true">loop</input>

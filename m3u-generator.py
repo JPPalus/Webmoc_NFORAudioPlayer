@@ -2,7 +2,7 @@ import glob
 from natsort import natsorted
 
 VALID_FILES = ['.mp3', '.wav', '.flac', '.mid', '.ogg']
-SITE_ROOT = 'https://malekith.fr/VoxCasterPublicae/'
+SITE_ROOT = 'https://vox-caster.fr/'
 
 files = natsorted(glob.glob('**/*',recursive=True))
 

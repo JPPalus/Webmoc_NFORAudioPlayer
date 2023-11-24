@@ -1,4 +1,4 @@
-# VoxCasterPublicae
+# Webmoc_NFORAudioPlayer
 A javascript small-form audio player, inspired by moc (music on console).
 
 The `.php` file is a self-sufficient drop-in of the project.
